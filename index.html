@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JAMB CBT - Pro Terminal</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <button onclick="toggleDark()" class="p-2 bg-black/10 rounded-lg text-xs">🌙 Mode</button>
   <style>
     @media print { .no-print { display: none; } }
     .accent-green { accent-color: #15803d; }
@@ -13,7 +14,12 @@
   </style>
 </head>
 <body class="bg-gray-100 font-sans antialiased text-gray-900">
-
+<div id="loginBox" class="bg-white p-8 rounded-2xl shadow-xl max-w-md mx-auto mt-20">
+  <h2 class="text-2xl font-bold mb-4">Student Login</h2>
+  <input type="email" id="email" placeholder="Email" class="w-full p-3 border rounded mb-3">
+  <input type="password" id="pass" placeholder="Password" class="w-full p-3 border rounded mb-4">
+  <button onclick="handleLogin()" class="w-full bg-green-700 text-white p-3 rounded-lg font-bold">Enter Terminal</button>
+</div>
   <header class="bg-green-700 text-white p-4 shadow-lg sticky top-0 z-50 no-print">
     <div class="max-w-5xl mx-auto flex justify-between items-center">
       <div class="flex items-center gap-2">
@@ -1630,6 +1636,10 @@ Literature: [
       userAnswers[index] = val;
       showQuestion(); 
     }
+    function toggleDark() {
+  document.documentElement.classList.toggle('dark');
+  // Tailwind handles the rest if you use the 'dark:' prefix in your classes
+}
 
     function nextq() {
       if (index < examQs.length - 1) {
@@ -1701,4 +1711,5 @@ Literature: [
     }
   </script>
 </body>
+
 </html>
