@@ -1,0 +1,1601 @@
+/* ============================================================
+   1. GLOBAL STATE & CONFIG
+   ============================================================ */
+let isSignupMode = false;
+let currentQuestions = [];
+let userAnswers = [];
+let currentIndex = 0;
+let timer;
+let timeLeft = 120 * 60; // 2 hours
+let studentData = { name: "", reg: "" };
+
+/* ============================================================
+   2. THE QUESTION BANK (English + Subject Placeholders)
+   ============================================================ */
+const qBank = {
+    English: [
+        { q: "Choose the correctly spelled word:", options: ["Recieve", "Receive", "Recive", "Receeve"], answer: "B" },
+        { q: "The boy ______ to school yesterday.", options: ["go", "goes", "went", "gone"], answer: "C" },
+        { q: "Neither the teacher nor the students ______ present.", options: ["was", "were", "is", "has been"], answer: "B" },
+        { q: "She is the ______ of the two sisters.", options: ["tallest", "taller", "tall", "most tall"], answer: "B" },
+        { q: "Choose the synonym for 'Obstinate':", options: ["Flexible", "Stubborn", "Quiet", "Friendly"], answer: "B" },
+        { q: "I have been living here ______ 2010.", options: ["for", "since", "from", "at"], answer: "B" },
+        { q: "Choose the antonym for 'Distant':", options: ["Far", "Remote", "Near", "Isolated"], answer: "C" },
+        { q: "The meeting has been put ______ until next week.", options: ["on", "away", "off", "back"], answer: "C" },
+        { q: "He is ______ honest man.", options: ["a", "an", "the", "some"], answer: "B" },
+        { q: "One of the boys ______ broken the window.", options: ["have", "had", "has", "are"], answer: "C" },
+        { q: "Identify the odd word out:", options: ["Table", "Chair", "Desk", "Eating"], answer: "D" },
+        { q: "You ______ better see a doctor immediately.", options: ["would", "should", "had", "ought"], answer: "C" },
+        { q: "The car crashed ______ the fence.", options: ["at", "into", "on", "by"], answer: "B" },
+        { q: "She works hard, ______ she?", options: ["does", "doesn't", "did", "didn't"], answer: "B" },
+        { q: "The bread was shared ______ the three children.", options: ["between", "among", "with", "by"], answer: "B" },
+        { q: "Choose the correctly spelled word:", options: ["Occurred", "Ocured", "Occured", "Ocurede"], answer: "A" },
+        { q: "If I ______ you, I would take the offer.", options: ["am", "was", "were", "be"], answer: "C" },
+        { q: "The sun ______ in the east.", options: ["rise", "rises", "rose", "rising"], answer: "B" },
+        { q: "He prefers tea ______ coffee.", options: ["than", "to", "for", "against"], answer: "B" },
+        { q: "Choose the synonym for 'Abundant':", options: ["Scarce", "Plentiful", "Small", "Empty"], answer: "B" },
+        { q: "The man ______ stole the bag was caught.", options: ["which", "whom", "who", "whose"], answer: "C" },
+        { q: "They have been playing football ______ three hours.", options: ["since", "from", "at", "for"], answer: "D" },
+        { q: "Choose the antonym for 'Giant':", options: ["Huge", "Large", "Dwarf", "Enormous"], answer: "C" },
+        { q: "Identify the part of speech for 'Quickly':", options: ["Noun", "Verb", "Adverb", "Adjective"], answer: "C" },
+        { q: "He had hardly finished the work ______ the bell rang.", options: ["when", "than", "then", "while"], answer: "A" },
+        { q: "The news ______ very exciting.", options: ["are", "is", "were", "been"], answer: "B" },
+        { q: "A person who writes books is an ______.", options: ["Artist", "Author", "Actor", "Architect"], answer: "B" },
+        { q: "The opposite of 'Expensive' is ______.", options: ["Costly", "Cheap", "Valuable", "Pricey"], answer: "B" },
+        { q: "Neither of the cars ______ working.", options: ["is", "are", "were", "be"], answer: "A" },
+        { q: "Choose the correctly spelled word:", options: ["Maintenance", "Maintenace", "Maintainance", "Maintenanse"], answer: "A" },
+        { q: "The police ______ investigating the matter.", options: ["is", "was", "are", "has"], answer: "C" },
+        { q: "He is as brave as a ______.", options: ["Tiger", "Lion", "Elephant", "Dog"], answer: "B" },
+        { q: "Which of these is a plural noun?", options: ["Child", "Foot", "Mice", "Tooth"], answer: "C" },
+        { q: "The headmaster, as well as the teachers, ______ coming.", options: ["is", "are", "were", "be"], answer: "A" },
+        { q: "Choose the synonym for 'Fragile':", options: ["Strong", "Tough", "Brittle", "Heavy"], answer: "C" },
+        { q: "He did not pass the exam ______ he studied hard.", options: ["because", "although", "since", "so"], answer: "B" },
+        { q: "I ______ to the market tomorrow.", options: ["go", "went", "will go", "gone"], answer: "C" },
+        { q: "The book ______ on the table.", options: ["lies", "lays", "lie", "lain"], answer: "A" },
+        { q: "Choose the antonym for 'Transparent':", options: ["Clear", "Bright", "Opaque", "Clean"], answer: "C" },
+        { q: "He is the ______ man I have ever met.", options: ["most kind", "kindest", "kinder", "kind"], answer: "B" },
+        { q: "The patient was _______ to the hospital.", options: ["taken", "carried", "rushed", "sent"], answer: "C" },
+        { q: "Choose the antonym for 'Humble':", options: ["Modest", "Proud", "Meek", "Simple"], answer: "B" },
+        { q: "The committee _______ still debating the issue.", options: ["are", "is", "were", "have been"], answer: "B" },
+        { q: "He is looking forward to _______ you soon.", options: ["see", "seen", "seeing", "saw"], answer: "C" },
+        { q: "Choose the correctly spelled word:", options: ["Occurrence", "Occurence", "Ocurence", "Occurrance"], answer: "A" },
+        { q: "The rain stopped, so we _______ continue our journey.", options: ["can", "could", "might", "should"], answer: "B" },
+        { q: "He was charged _______ murder.", options: ["for", "with", "of", "about"], answer: "B" },
+        { q: "Identify the part of speech for 'Strong':", options: ["Noun", "Verb", "Adjective", "Adverb"], answer: "C" },
+        { q: "She is not only beautiful _______ also intelligent.", options: ["and", "but", "so", "than"], answer: "B" },
+        { q: "The plane took _______ at exactly 10:00 AM.", options: ["in", "on", "off", "up"], answer: "C" },
+        { q: "A place where bees are kept is called an _______.", options: ["Aquarium", "Aviary", "Apiary", "Orchard"], answer: "C" },
+        { q: "Choose the synonym for 'Incredible':", options: ["Unbelievable", "Ordinary", "Possible", "True"], answer: "A" },
+        { q: "I would have visited you if I _______ your address.", options: ["know", "knows", "had known", "have known"], answer: "C" },
+        { q: "The suitcase is _______ heavy for me to carry.", options: ["too", "so", "very", "much"], answer: "A" },
+        { q: "Choose the antonym for 'Optimist':", options: ["Idealist", "Pessimist", "Realist", "Artist"], answer: "B" },
+        { q: "He is good _______ Mathematics.", options: ["in", "at", "with", "for"], answer: "B" },
+        { q: "The sound of a snake is a _______.", options: ["Roar", "Hiss", "Bark", "Mew"], answer: "B" },
+        { q: "Choose the correctly spelled word:", options: ["Pronunciation", "Pronounciation", "Pronunsiation", "Prononciation"], answer: "A" },
+        { q: "He was told to keep _______ the grass.", options: ["on", "off", "up", "away"], answer: "B" },
+        { q: "Identify the part of speech for 'Between':", options: ["Conjunction", "Preposition", "Adverb", "Pronoun"], answer: "B" }
+    ],
+    Mathematics: [
+   { q: "If f(x) = 2x - 5, find f^-1(9).", options: ["7","5","8","6"], answer: "C" },
+   { q: "The 10th term of AP: 4, 9, 14,... is:", options: ["49","50","54","51"], answer: "D" },
+   { q: "Find the value of y if 5y - 3 = 2y + 6.", options: ["2","3","1","4"], answer: "B" },
+   { q: "A triangle has sides 5 cm, 12 cm and 13 cm. Area is:", options: ["30 cm²","25 cm²","60 cm²","32 cm²"], answer: "A" },
+   { q: "Solve for x: 4x^2 - 12x = 0", options: ["0 or 3","0 or 4","3 or 4","1 or 3"], answer: "A" },
+   { q: "If sin θ = 3/5, find cos θ.", options: ["4/5","3/5","5/3","1/2"], answer: "A" },
+   { q: "A die is rolled. Probability of getting an odd number:", options: ["1/2","1/3","1/4","2/3"], answer: "A" },
+   { q: "Area of rectangle: length 15 cm, width 8 cm?", options: ["120 cm²","110 cm²","100 cm²","105 cm²"], answer: "A" },
+   { q: "Solve: 2x + 3 = 11", options: ["4","5","6","7"], answer: "A" },
+   { q: "Factorize: x^2 - 9", options: ["(x-3)(x+3)","(x+3)(x+2)","(x-9)(x+1)","(x-1)(x+9)"], answer: "A" },
+   { q: "If 3x - 2 = 10, find x.", options: ["4","5","6","3"], answer: "B" },
+   { q: "The 7th term of AP: 2, 5, 8,... is:", options: ["20","21","22","23"], answer: "B" },
+   { q: "If the perimeter of a square is 36 cm, find area.", options: ["81 cm²","72 cm²","64 cm²","90 cm²"], answer: "A" },
+   { q: "Simplify: 3/4 ÷ 1/2", options: ["3/8","1/2","3/2","2/3"], answer: "C" },
+   { q: "Solve x^2 + 5x + 6 = 0", options: ["-2 or -3","2 or 3","-1 or -6","1 or 6"], answer: "A" },
+   { q: "If y varies directly as x, y=10 when x=2. Find y when x=5.", options: ["20","25","30","15"], answer: "B" },
+   { q: "Solve 2x - 7 = 5", options: ["4","5","6","3"], answer: "C" },
+   { q: "A circle has radius 7 cm. Area = ?", options: ["154 cm²","145 cm²","150 cm²","140 cm²"], answer: "A" },
+   { q: "If tan θ = 1, find θ.", options: ["45°","30°","60°","90°"], answer: "A" },
+   { q: "The probability of drawing a red card from a deck of 52 cards:", options: ["1/2","1/4","1/3","1/5"], answer: "A" },
+   { q: "Solve: 3x + 4 = 19", options: ["4","5","6","7"], answer: "B" },
+   { q: "The sum of interior angles of a pentagon:", options: ["540°","360°","720°","180°"], answer: "A" },
+   { q: "If f(x) = x^2 + 2, find f(3).", options: ["11","12","13","9"], answer: "A" },
+   { q: "The volume of cube: side 5 cm?", options: ["125 cm³","100 cm³","150 cm³","120 cm³"], answer: "A" },
+   { q: "Solve: x/3 + 4 = 7", options: ["6","9","12","3"], answer: "D" },
+   { q: "Simplify: 2/5 × 15/8", options: ["3/4","5/4","4/5","3/5"], answer: "A" },
+   { q: "If a = 2, b = 3, find a^2 + b^2", options: ["13","12","10","11"], answer: "A" },
+   { q: "Area of triangle: base = 10 cm, height = 6 cm?", options: ["30 cm²","60 cm²","36 cm²","20 cm²"], answer: "A" },
+   { q: "Solve: 5x + 7 = 22", options: ["3","4","5","6"], answer: "B" },
+   { q: "If 2x - 5 = 9, x = ?", options: ["5","7","6","4"], answer: "B" },
+   { q: "Simplify: (3/4 + 1/2)", options: ["5/4","1/4","3/4","7/4"], answer: "D" },
+   { q: "Solve: x^2 - 4x + 4 = 0", options: ["2","-2","4","-4"], answer: "A" },
+   { q: "The 12th term of AP: 1, 4, 7,... is:", options: ["34","35","36","37"], answer: "C" },
+   { q: "A rectangular prism: length=5, width=4, height=3. Volume?", options: ["60","50","70","55"], answer: "A" },
+   { q: "Simplify: 5/6 - 1/3", options: ["1/2","1/3","2/3","1/6"], answer: "C" },
+   { q: "If sin θ = 1/2, θ = ?", options: ["30°","60°","45°","90°"], answer: "A" },
+   { q: "Probability of flipping a head on a coin:", options: ["1/2","1/4","1/3","1/5"], answer: "A" },
+   { q: "Solve 4x + 9 = 25", options: ["4","3","5","6"], answer: "C" },
+   { q: "If f(x) = 2x + 3, f(5) = ?", options: ["12","13","14","15"], answer: "B" },
+   { q: "Area of circle: radius = 14 cm (π=22/7)?", options: ["616","600","650","640"], answer: "A" },
+   { q: "Solve for x: x^2 - x - 6 = 0", options: ["3 or -2","2 or -3","6 or -1","1 or -6"], answer: "A"}
+],
+    Physics: [   {
+    q: "A body moves along a circular path with a constant speed. Its acceleration is:",
+    options: ["Zero", "Constant in magnitude", "Constant in direction", "Directed away from the center"],
+    answer: "B"
+  },
+  {
+    q: "The dimension of Planck's constant is the same as that of:",
+    options: ["Force", "Linear momentum", "Work", "Angular momentum"],
+    answer: "D"
+  },
+  {
+    q: "A simple pendulum has a period of 2.0s. What is its period if its length is quadrupled?",
+    options: ["1.0s", "2.0s", "4.0s", "8.0s"],
+    answer: "C"
+  },
+  {
+    q: "Which of the following is a derived unit?",
+    options: ["Kilogram", "Ampere", "Newton", "Kelvin"],
+    answer: "C"
+  },
+  {
+    q: "The clinical thermometer is characterized by having a:",
+    options: ["Wide bore", "Long stem", "Narrow constriction", "Large bulb"],
+    answer: "C"
+  },
+  {
+    q: "A gas occupies 2.0L at 273K. What is its volume at 546K if pressure is constant?",
+    options: ["1.0L", "2.0L", "4.0L", "8.0L"],
+    answer: "C"
+  },
+  {
+    q: "The process whereby a liquid turns into gas without boiling is:",
+    options: ["Sublimation", "Evaporation", "Condensation", "Deposition"],
+    answer: "B"
+  },
+  {
+    q: "The amount of heat required to raise the temperature of a unit mass by 1K is:",
+    options: ["Heat capacity", "Specific heat capacity", "Latent heat", "Internal energy"],
+    answer: "B"
+  },
+  {
+    q: "Which of the following mirrors forms only virtual, erect and diminished images?",
+    options: ["Concave mirror", "Convex mirror", "Plane mirror", "Parabolic mirror"],
+    answer: "B"
+  },
+  {
+    q: "The change in the direction of a wave as it passes from one medium to another is:",
+    options: ["Reflection", "Refraction", "Diffraction", "Interference"],
+    answer: "B"
+  },
+  {
+    q: "A lens that is thinner at the middle than at the edges is a:",
+    options: ["Converging lens", "Diverging lens", "Biconvex lens", "Plano-convex lens"],
+    answer: "B"
+  },
+  {
+    q: "The velocity of light in a vacuum is approximately:",
+    options: ["$3 \times 10^{8} m/s$", "$3 \times 10^{10} m/s$", "$1.5 \times 10^{8} m/s$", "$3 \times 10^{5} m/s$"],
+    answer: "A"
+  },
+  {
+    q: "Sound waves are examples of:",
+    options: ["Transverse waves", "Electromagnetic waves", "Longitudinal waves", "Stationary waves"],
+    answer: "C"
+  },
+  {
+    q: "The unit of electric charge is the:",
+    options: ["Volt", "Ampere", "Ohm", "Coulomb"],
+    answer: "D"
+  },
+  {
+    q: "A device that converts mechanical energy into electrical energy is a:",
+    options: ["Motor", "Transformer", "Generator", "Rectifier"],
+    answer: "C"
+  },
+  {
+    q: "The resistance of a wire is $10 \Omega$. If its length is doubled and area is halved, new resistance is:",
+    options: ["$10 \Omega$", "$20 \Omega$", "$40 \Omega$", "$5 \Omega$"],
+    answer: "C"
+  },
+  {
+    q: "The instrument used to measure relative humidity is the:",
+    options: ["Hydrometer", "Hygrometer", "Barometer", "Anemometer"],
+    answer: "B"
+  },
+  {
+    q: "Which of the following is NOT a vector quantity?",
+    options: ["Velocity", "Force", "Temperature", "Acceleration"],
+    answer: "C"
+  },
+  {
+    q: "The escape velocity of an object from the Earth's surface depends on:",
+    options: ["Mass of the object", "Radius of the Earth", "The angle of projection", "The time of launch"],
+    answer: "B"
+  },
+  {
+    q: "An object is placed at the center of curvature of a concave mirror. The image is:",
+    options: ["Real and diminished", "Real and same size", "Virtual and enlarged", "Real and enlarged"],
+    answer: "B"
+  },
+  {
+    q: "Which particle is identical to the Helium nucleus?",
+    options: ["Alpha particle", "Beta particle", "Gamma ray", "Proton"],
+    answer: "A"
+  },
+  {
+    q: "The time taken for half the atoms in a radioactive sample to decay is:",
+    options: ["Decay constant", "Mean life", "Half-life", "Activity"],
+    answer: "C"
+  },
+  {
+    q: "Which of the following is the most penetrating?",
+    options: ["Alpha rays", "Beta rays", "Gamma rays", "X-rays"],
+    answer: "C"
+  },
+  {
+    q: "The work done in moving a unit charge between two points in a circuit is:",
+    options: ["Current", "Power", "Potential Difference", "Capacitance"],
+    answer: "C"
+  },
+  {
+    q: "The property of a body to remain at rest or in uniform motion unless acted upon is:",
+    options: ["Momentum", "Inertia", "Friction", "Impulse"],
+    answer: "B"
+  },
+  {
+    q: "A step-up transformer increases:",
+    options: ["Power", "Current", "Voltage", "Frequency"],
+    answer: "C"
+  },
+  {
+    q: "The SI unit of magnetic flux density is the:",
+    options: ["Weber", "Tesla", "Henry", "Farad"],
+    answer: "B"
+  },
+  {
+    q: "Which of the following travels at the speed of light?",
+    options: ["Sound waves", "Water waves", "Radio waves", "Cathode rays"],
+    answer: "C"
+  },
+  {
+    q: "The colors seen in a thin film of oil on water are due to:",
+    options: ["Refraction", "Interference", "Diffraction", "Polarization"],
+    answer: "B"
+  },
+  {
+    q: "A machine with an efficiency of 80% has a velocity ratio of 5. Its mechanical advantage is:",
+    options: ["4", "5", "6.25", "0.8"],
+    answer: "A"
+  },
+  {
+    q: "The temperature at which the water vapor in the air is just sufficient to saturate it is:",
+    options: ["Ice point", "Boiling point", "Dew point", "Critical point"],
+    answer: "C"
+  },
+  {
+    q: "Capacitance is measured in:",
+    options: ["Ohms", "Farads", "Henrys", "Watts"],
+    answer: "B"
+  },
+  {
+    q: "Newton's second law of motion states that $F$ is equal to:",
+    options: ["$m \times v$", "$m \times a$", "$v / t$", "$1/2 mv^2$"],
+    answer: "B"
+  },
+  {
+    q: "The bubbling of a liquid when heated is called:",
+    options: ["Evaporation", "Melting", "Boiling", "Convection"],
+    answer: "C"
+  },
+  {
+    q: "Which of the following surfaces is the best absorber of radiant heat?",
+    options: ["White and polished", "Black and dull", "Silvered", "Red and smooth"],
+    answer: "B"
+  },
+  {
+    q: "The apparent upward force exerted by a fluid on an object is:",
+    options: ["Tension", "Upthrust", "Friction", "Gravity"],
+    answer: "B"
+  },
+  {
+    q: "The unit of power is:",
+    options: ["Joule", "Watt", "Newton", "Pascal"],
+    answer: "B"
+  },
+  {
+    q: "A body of mass 2kg is moving at 4m/s. Its kinetic energy is:",
+    options: ["8J", "16J", "4J", "32J"],
+    answer: "B"
+  },
+  {
+    q: "The focal length of a lens is 20cm. Its power in dioptres is:",
+    options: ["0.05", "5", "20", "50"],
+    answer: "B"
+  },
+  {
+    q: "In a P-type semiconductor, the majority charge carriers are:",
+    options: ["Electrons", "Holes", "Protons", "Neutrons"],
+    answer: "B"
+  }
+    ],
+    Biology: [
+     { q: "The power house of the living cell is the:", options: ["Nucleus", "Ribosome", "Mitochondrion", "Golgi body"], answer: "C" },
+ 
+  { q: "The function of the contractile vacuole in Amoeba is:", options: ["Movement", "Osmoregulation", "Digestion", "Respiration"], answer: "B" },
+
+  { q: "Which of the following is a primary producer?", options: ["Fungi", "Grasshopper", "Green plants", "Bacteria"], answer: "C" },
+ 
+  { q: "The basic unit of classification is the:", options: ["Genus", "Species", "Phylum", "Kingdom"], answer: "B" },
+  
+  { q: "Vitamin K is important for:", options: ["Night vision", "Strong bones", "Blood clotting", "Fertility"], answer: "C" },
+  
+  { q: "The part of the brain that controls balance is the:", options: ["Cerebrum", "Cerebellum", "Medulla oblongata", "Hypothalamus"], answer: "B" },
+  
+  { q: "Which of these is a vestigial organ in humans?", options: ["Appendix", "Liver", "Spleen", "Pancreas"], answer: "A" },
+ 
+  { q: "The process of maintaining a constant internal environment is:", options: ["Plasmolysis", "Homeostasis", "Diffusion", "Osmosis"], answer: "B" },
+ 
+  { q: "In the ABO blood group, the universal donor is:", options: ["Group A", "Group B", "Group AB", "Group O"], answer: "D" },
+ 
+  { q: "The deficiency of Insulin leads to:", options: ["Goitre", "Scurvy", "Diabetes mellitus", "Rickets"], answer: "C" },
+ 
+  { q: "The structure used for gaseous exchange in insects is the:", options: ["Gills", "Trachea", "Lungs", "Cell membrane"], answer: "B" },
+ 
+  { q: "A symbiotic relationship where both organisms benefit is:", options: ["Parasitism", "Commensalism", "Mutualism", "Saprophytism"], answer: "C" },
+ 
+  { q: "The male reproductive organ of a flower is the:", options: ["Pistil", "Stamen", "Petal", "Sepal"], answer: "B" },
+ 
+  { q: "The green pigment found in plants is:", options: ["Haemoglobin", "Chlorophyll", "Melanin", "Anthocyanin"], answer: "B" },
+  
+  { q: "The type of joint found at the elbow is the:", options: ["Ball and socket", "Hinge joint", "Suture joint", "Gliding joint"], answer: "B" },
+ 
+  { q: "The enzyme found in human saliva is:", options: ["Pepsin", "Ptyalin", "Rennin", "Lipase"], answer: "B" },
+ 
+  { q: "The theory of 'use and disuse' was proposed by:", options: ["Darwin", "Lamarck", "Mendel", "Hooke"], answer: "B" },
+  
+  { q: "The hormone that controls water reabsorption in the kidney is:", options: ["Thyroxine", "Adrenaline", "ADH", "Insulin"], answer: "C" },
+ 
+  { q: "Movement of food through the esophagus is by:", options: ["Diffusion", "Peristalsis", "Osmosis", "Active transport"], answer: "B" },
+ 
+  { q: "Which cell organelle is responsible for protein synthesis?", options: ["Vacuole", "Ribosome", "Lysosome", "Centriole"], answer: "B" },
+ 
+  { q: "The blood vessel that carries deoxygenated blood to the lungs is:", options: ["Aorta", "Pulmonary vein", "Pulmonary artery", "Vena cava"], answer: "C" },
+ 
+  { q: "Nitrogen-fixing bacteria are usually found in the:", options: ["Leaves", "Root nodules of legumes", "Stems", "Fruit"], answer: "B" },
+  
+  { q: "A person with rhesus factor is said to be:", options: ["Rhesus negative", "Rhesus positive", "Anaemic", "Sterile"], answer: "B" },
+ 
+  { q: "Pollination by wind is called:", options: ["Entomophily", "Anemophily", "Hydrophily", "Ornithophily"], answer: "B" },
+  
+  { q: "The study of heredity and variation is:", options: ["Ecology", "Genetics", "Physiology", "Taxonomy"], answer: "B" },
+ 
+  { q: "The fluid that protects the fetus in the womb is:", options: ["Cytoplasm", "Amniotic fluid", "Plasma", "Cerebrospinal fluid"], answer: "B" },
+ 
+  { q: "Fungi are classified as saprophytes because they:", options: ["Produce their own food", "Feed on dead organic matter", "Are parasites", "Prey on insects"], answer: "B" },
+
+  { q: "The dark reaction of photosynthesis takes place in the:", options: ["Grana", "Stroma", "Cytoplasm", "Nucleus"], answer: "B" },
+ 
+  { q: "The skeletal system of a young tadpole is composed of:", options: ["Bone", "Cartilage", "Chitin", "Shell"], answer: "B" },
+ 
+  { q: "Which of the following is an example of an infectious disease?", options: ["Diabetes", "Scurvy", "Tuberculosis", "Rickets"], answer: "C" },
+ 
+  { q: "The process by which plants lose water through the stomata is:", options: ["Guttation", "Transpiration", "Evaporation", "Respiration"], answer: "B" },
+  
+  { q: "The functional unit of the kidney is the:", options: ["Neuron", "Nephron", "Alveoli", "Villi"], answer: "B" },
+  
+  { q: "In genetics, the physical appearance of an organism is the:", options: ["Genotype", "Phenotype", "Allele", "Locus"], answer: "B" },
+ 
+  { q: "The primary source of energy for all living things is:", options: ["The moon", "The sun", "The wind", "Water"], answer: "B" },
+ 
+  { q: "The removal of metabolic waste from the body is:", options: ["Digestion", "Egestion", "Excretion", "Secretions"], answer: "C" },
+ 
+  { q: "The sensory organ for hearing and balance is the:", options: ["Eye", "Nose", "Ear", "Skin"], answer: "C" },
+ 
+  { q: "A collection of similar cells performing a specific function is:", options: ["Organ", "System", "Tissue", "Organism"], answer: "C" },
+ 
+  { q: "Which instrument is used to measure light intensity?", options: ["Anemometer", "Photometer", "Hygrometer", "Barometer"], answer: "B" },
+ 
+  { q: "The vitamin produced in the skin when exposed to sunlight is:", options: ["Vitamin A", "Vitamin B", "Vitamin C", "Vitamin D"], answer: "D" },
+ 
+  { q: "An example of a flightless bird is:", options: ["Eagle", "Hawk", "Ostrich", "Pigeon"], answer: "C" }
+    ],
+    Chemistry: [
+    {
+    q: "The particle that determines the identity of an element is the:",
+    options: ["Neutron", "Electron", "Proton", "Positron"],
+    answer: "C"
+  },
+  {
+    q: "Which of the following is a physical change?",
+    options: ["Burning of paper", "Rusting of iron", "Melting of ice", "Ripening of fruit"],
+    answer: "C"
+  },
+  {
+    q: "The maximum number of electrons that can be held in the 'M' shell is:",
+    options: ["2", "8", "18", "32"],
+    answer: "C"
+  },
+  {
+    q: "Elements in the same group of the periodic table have the same number of:",
+    options: ["Protons", "Neutrons", "Valence electrons", "Electron shells"],
+    answer: "C"
+  },
+  {
+    q: "The type of bond formed by the sharing of electrons between two atoms is:",
+    options: ["Ionic", "Covalent", "Metallic", "Dative"],
+    answer: "B"
+  },
+  {
+    q: "Which of the following gases is used in fire extinguishers?",
+    options: ["Oxygen", "Nitrogen", "Carbon dioxide", "Helium"],
+    answer: "C"
+  },
+  {
+    q: "The empirical formula of a compound with molecular formula $C_6H_{12}O_6$ is:",
+    options: ["$CH_2O$", "$C_3H_6O_3$", "$CHO$", "$C_6H_{12}O_6$"],
+    answer: "A"
+  },
+  {
+    q: "According to Charles' Law, the volume of a gas is directly proportional to its:",
+    options: ["Pressure", "Density", "Absolute temperature", "Mass"],
+    answer: "C"
+  },
+  {
+    q: "A solution with a pH of 3 is considered:",
+    options: ["Strongly alkaline", "Weakly alkaline", "Strongly acidic", "Neutral"],
+    answer: "C"
+  },
+  {
+    q: "The process of loss of electrons is known as:",
+    options: ["Reduction", "Oxidation", "Hydrogenation", "Neutralization"],
+    answer: "B"
+  },
+  {
+    q: "Which of the following is an example of an isotope of Hydrogen?",
+    options: ["Deuterium", "Helium", "Lithium", "Beryllium"],
+    answer: "A"
+  },
+  {
+    q: "The catalyst used in the Haber process for the manufacture of ammonia is:",
+    options: ["Vanadium (V) oxide", "Finely divided iron", "Platinum", "Manganese (IV) oxide"],
+    answer: "B"
+  },
+  {
+    q: "Hydrocarbons that contain only single bonds are called:",
+    options: ["Alkenes", "Alkynes", "Alkanes", "Arenes"],
+    answer: "C"
+  },
+  {
+    q: "The general formula for the Alkyne series is:",
+    options: ["$C_nH_{2n+2}$", "$C_nH_{2n}$", "$C_nH_{2n-2}$", "$C_nH_{2n+1}$"],
+    answer: "C"
+  },
+  {
+    q: "Which of the following is the hardest known natural substance?",
+    options: ["Graphite", "Diamond", "Quartz", "Coal"],
+    answer: "B"
+  },
+  {
+    q: "The reaction between an acid and a base to produce salt and water is:",
+    options: ["Hydrolysis", "Saponification", "Neutralization", "Esterification"],
+    answer: "C"
+  },
+  {
+    q: "What is the oxidation state of Manganese in $KMnO_4$?",
+    options: ["+2", "+4", "+6", "+7"],
+    answer: "D"
+  },
+  {
+    q: "The movement of particles from a region of higher concentration to lower concentration is:",
+    options: ["Osmosis", "Diffusion", "Effusion", "Evaporation"],
+    answer: "B"
+  },
+  {
+    q: "Which of the following will change the color of blue litmus paper to red?",
+    options: ["$NaOH$", "$NH_3$", "$HCl$", "$KOH$"],
+    answer: "C"
+  },
+  {
+    q: "The fundamental unit of a substance that can exist independently is the:",
+    options: ["Atom", "Molecule", "Ion", "Element"],
+    answer: "B"
+  },
+  {
+    q: "The noble gas used in filling weather balloons because it is light and non-flammable is:",
+    options: ["Hydrogen", "Helium", "Neon", "Argon"],
+    answer: "B"
+  },
+  {
+    q: "The boiling point of water in the Kelvin scale is:",
+    options: ["100 K", "273 K", "373 K", "0 K"],
+    answer: "C"
+  },
+  {
+    q: "An example of a hygroscopic substance is:",
+    options: ["Copper (II) oxide", "Calcium oxide", "Sodium chloride", "Zinc nitrate"],
+    answer: "B"
+  },
+  {
+    q: "The law which states that 'Matter is neither created nor destroyed' is the Law of:",
+    options: ["Definite Proportion", "Multiple Proportion", "Conservation of Mass", "Reciprocal Proportion"],
+    answer: "C"
+  },
+  {
+    q: "Which of these is a major constituent of natural gas?",
+    options: ["Ethane", "Methane", "Propane", "Butane"],
+    answer: "B"
+  },
+  {
+    q: "The property of some elements to exist in two or more forms in the same physical state is:",
+    options: ["Isomerism", "Isotopy", "Allotropy", "Hygroscopy"],
+    answer: "C"
+  },
+  {
+    q: "The separation technique used to separate components of crude oil is:",
+    options: ["Filtration", "Simple distillation", "Fractional distillation", "Evaporation"],
+    answer: "C"
+  },
+  {
+    q: "Which of the following is an amphoteric oxide?",
+    options: ["$CO_2$", "$Na_2O$", "$Al_2O_3$", "$SO_2$"],
+    answer: "C"
+  },
+  {
+    q: "The gas that gives a 'pop' sound with a glowing splint is:",
+    options: ["Oxygen", "Carbon dioxide", "Hydrogen", "Nitrogen"],
+    answer: "C"
+  },
+  {
+    q: "The radioactive emission with the highest ionizing power is:",
+    options: ["Alpha ray", "Beta ray", "Gamma ray", "X-ray"],
+    answer: "A"
+  },
+  {
+    q: "The molar volume of any gas at STP is:",
+    options: ["$2.24 dm^3$", "$22.4 dm^3$", "$224 dm^3$", "$0.224 dm^3$"],
+    answer: "B"
+  },
+  {
+    q: "The functional group $-OH$ belongs to:",
+    options: ["Alkanals", "Alkanones", "Alkanols", "Alkanoic acids"],
+    answer: "C"
+  },
+  {
+    q: "The process by which large hydrocarbon molecules are broken into smaller ones is:",
+    options: ["Polymerization", "Cracking", "Hydrogenation", "Isomerization"],
+    answer: "B"
+  },
+  {
+    q: "Which of the following is a primary cell?",
+    options: ["Lead-acid accumulator", "Leclanché cell", "Nickel-iron cell", "Lithium-ion battery"],
+    answer: "B"
+  },
+  {
+    q: "The method used to soften temporary hard water is:",
+    options: ["Addition of washing soda", "Boiling", "Ion exchange", "Addition of alum"],
+    answer: "B"
+  },
+  {
+    q: "The solubility of most solids in water _______ with an increase in temperature.",
+    options: ["Decreases", "Increases", "Remains constant", "Initially increases then decreases"],
+    answer: "B"
+  },
+  {
+    q: "The shape of a water molecule is:",
+    options: ["Linear", "V-shaped (Bent)", "Tetrahedral", "Trigonal planar"],
+    answer: "B"
+  },
+  {
+    q: "Which element is common to all organic compounds?",
+    options: ["Nitrogen", "Oxygen", "Carbon", "Sulfur"],
+    answer: "C"
+  },
+  {
+    q: "The most electronegative element in the periodic table is:",
+    options: ["Chlorine", "Fluorine", "Oxygen", "Nitrogen"],
+    answer: "B"
+  },
+  {
+    q: "A chemical reaction where heat is given out to the surroundings is:",
+    options: ["Endothermic", "Exothermic", "Spontaneous", "Reversible"],
+    answer: "B"
+  }
+],
+    Government: [ 
+  { q: "The supreme power of a state to make and enforce laws is:", options: ["Legitimacy", "Sovereignty", "Authority", "Democracy"], answer: "B" },
+  
+  { q: "A system of government where power is shared between central and state units is:", options: ["Unitary", "Federal", "Confederal", "Monarchy"], answer: "B" },
+  
+  { q: "The 'rule of law' means:", options: ["Lawyers are supreme", "The law is supreme", "Judges make the law", "Military law is best"], answer: "B" },
+  
+  { q: "The organ of government responsible for making laws is the:", options: ["Executive", "Judiciary", "Legislature", "Police"], answer: "C" },
+  
+  { q: "A constitution that is difficult to amend is called:", options: ["Flexible", "Rigid", "Written", "Unwritten"], answer: "B" },
+  
+  { q: "The right to vote is known as:", options: ["Franchise", "Plebiscite", "Referendum", "Injunction"], answer: "A" },
+  
+  { q: "Which of these is a characteristic of a state?", options: ["Population", "Political party", "Religion", "Market"], answer: "A" },
+  
+  { q: "The head of a parliamentary system of government is the:", options: ["President", "Prime Minister", "Chief Justice", "Governor"], answer: "B" },
+  
+  { q: "A government ruled by a few wealthy people is an:", options: ["Aristocracy", "Oligarchy", "Autocracy", "Theocracy"], answer: "B" },
+  
+  { q: "The first Nigerian constitution was the:", options: ["Clifford Constitution", "Richards Constitution", "Macpherson Constitution", "Lyttelton Constitution"], answer: "A" },
+  
+  { q: "Separation of powers was popularized by:", options: ["John Locke", "Baron de Montesquieu", "Thomas Hobbes", "Jean-Jacques Rousseau"], answer: "B" },
+  
+  { q: "The policy of 'Indirect Rule' in Nigeria was introduced by:", options: ["Lord Lugard", "Sir Bernard Bourdillon", "Sir Arthur Richards", "John Beecroft"], answer: "A" },
+  
+  { q: "An example of a pressure group is:", options: ["APC", "PDP", "ASUU", "LP"], answer: "C" },
+  
+  { q: "The headquarters of the United Nations is in:", options: ["London", "Paris", "New York", "Geneva"], answer: "C" },
+  
+  { q: "The ECOWAS headquarters is located in:", options: ["Lagos", "Accra", "Abuja", "Dakar"], answer: "C" },
+  
+  { q: "The process of taking over a private industry by the government is:", options: ["Privatization", "Nationalization", "Commercialization", "Indigenization"], answer: "B" },
+  
+  { q: "In a unitary system, power is concentrated at the:", options: ["Local level", "State level", "Central level", "Regional level"], answer: "C" },
+  
+  { q: "The 'First Past the Post' system refers to:", options: ["Proportional representation", "Simple majority", "Absolute majority", "Indirect election"], answer: "B" },
+  
+  { q: "Which Nigerian constitution introduced federalism?", options: ["Clifford", "Richards", "Lyttelton", "Independence"], answer: "C" },
+  
+  { q: "The judicial arm of government:", options: ["Makes laws", "Interprets laws", "Enforces laws", "Pardons criminals"], answer: "B" },
+  
+  { q: "The ombudsman is also known as the:", options: ["Public Complaints Commission", "Electoral Commission", "Judicial Service Commission", "Police Service Commission"], answer: "A" },
+  
+  { q: "A vote of no confidence leads to the resignation of the:", options: ["President", "Chief Justice", "Cabinet", "Senate President"], answer: "C" },
+  
+  { q: "Communism was advocated by:", options: ["Adam Smith", "Karl Marx", "Abraham Lincoln", "Nelson Mandela"], answer: "B" },
+  
+  { q: "The 1979 Constitution of Nigeria introduced a:", options: ["Parliamentary system", "Presidential system", "Monarchy", "Military system"], answer: "B" },
+  
+  { q: "Gerrymandering is the manipulation of:", options: ["Electoral results", "Voter registration", "Constituency boundaries", "Campaign funds"], answer: "C" },
+  
+  { q: "The African Union (AU) replaced the:", options: ["ECA", "OAU", "ECOWAS", "SADC"], answer: "B" },
+  
+  { q: "Citizenship by birth is also known as:", options: ["Jus Sanguinis", "Naturalization", "Registration", "Conferment"], answer: "A" },
+  
+  { q: "The upper house of the Nigerian legislature is the:", options: ["House of Representatives", "Senate", "House of Assembly", "Council of State"], answer: "B" },
+  
+  { q: "A type of government where a religious leader is the head is:", options: ["Democracy", "Theocracy", "Plutocracy", "Monarchy"], answer: "B" },
+  
+  { q: "The Commonwealth is an association of former:", options: ["French colonies", "British colonies", "Spanish colonies", "Portuguese colonies"], answer: "B" },
+  
+  { q: "Fundamental Human Rights are usually contained in the:", options: ["Statute", "Constitution", "Decree", "Manifesto"], answer: "B" },
+  
+  { q: "Delegated legislation is made by the:", options: ["Judiciary", "Parliament", "Executive", "Police"], answer: "C" },
+  
+  { q: "A bicameral legislature has how many houses?", options: ["One", "Two", "Three", "Four"], answer: "B" },
+  
+  { q: "The primary function of the civil service is to:", options: ["Make laws", "Adjudicate cases", "Implement government policies", "Win elections"], answer: "C" },
+  
+  { q: "Public opinion is the opinion of:", options: ["The President", "The majority of citizens", "The military", "Elite members"], answer: "B" },
+  
+  { q: "Fascism originated in:", options: ["Germany", "Italy", "Spain", "Japan"], answer: "B" },
+  
+  { q: "The highest court in Nigeria is the:", options: ["High Court", "Court of Appeal", "Supreme Court", "Customary Court"], answer: "C" },
+  
+  { q: "Universal Adult Suffrage means everyone above a certain age has the right to:", options: ["Work", "Vote", "Travel", "Speak"], answer: "B" },
+  
+  { q: "The 1914 Amalgamation of Nigeria was done by:", options: ["Lord Lugard", "Flora Shaw", "Sir John Macpherson", "Queen Elizabeth"], answer: "A" },
+  
+  { q: "Veto power is held by permanent members of the:", options: ["UN General Assembly", "UN Security Council", "ECOWAS", "AU"], answer: "B" }
+ ],
+ IRS: [
+{ q: "The word 'Quran' literally means:", options: ["The Book", "The Recitation", "The Truth", "The Guidance"], answer: "B" },
+  
+  { q: "How many Suwar (chapters) are in the Holy Quran?", options: ["110", "114", "124", "144"], answer: "B" },
+  
+  { q: "The first Surah revealed to Prophet Muhammad (SAW) was:", options: ["Al-Fatihah", "Al-Baqarah", "Al-Alaq", "Al-Ikhlas"], answer: "C" },
+  
+  { q: "The migration of the Prophet from Makkah to Madinah is known as:", options: ["Hajj", "Hijrah", "Jihad", "Isra"], answer: "B" },
+  
+  { q: "Which caliph compiled the Quran into a single volume?", options: ["Abu Bakr", "Umar", "Uthman", "Ali"], answer: "C" },
+ 
+  { q: "The primary source of Shari'ah is:", options: ["Hadith", "Ijma", "The Quran", "Qiyas"], answer: "C" },
+  
+  { q: "Zakat is the ______ pillar of Islam.", options: ["Second", "Third", "Fourth", "Fifth"], answer: "B" },
+  
+  { q: "The Prophet's sayings, actions, and approvals are called:", options: ["Sunnah", "Hadith", "Fiqh", "Shari'ah"], answer: "B" },
+  
+  { q: "How many times do Muslims perform Salat daily?", options: ["3", "4", "5", "6"], answer: "C" },
+  
+  { q: "The Angel responsible for delivering revelations is:", options: ["Mikail", "Israfil", "Jibril", "Izrail"], answer: "C" },
+  
+  { q: "The battle of Badr took place in which year of the Hijrah?", options: ["1st year", "2nd year", "3rd year", "4th year"], answer: "B" },
+  
+  { q: "Fasting during the month of Ramadan is called:", options: ["Salat", "Sawm", "Zakat", "Hajj"], answer: "B" },
+  
+  { q: "The first woman to embrace Islam was:", options: ["Aisha", "Hafsah", "Khadijah", "Fatima"], answer: "C" },
+  
+  { q: "The direction Muslims face during prayer is the:", options: ["Qiblah", "Mihrab", "Minaret", "Ka'bah"], answer: "A" },
+  
+  { q: "Which Surah is known as the 'Heart of the Quran'?", options: ["Surah Al-Mulk", "Surah Yasin", "Surah Al-Waqiah", "Surah Al-Kahf"], answer: "B" },
+  
+  { q: "The term 'Tawheed' refers to the:", options: ["Prophethood", "Oneness of Allah", "Angels", "Day of Judgment"], answer: "B" },
+  
+  { q: "The Hadith collection 'Sahih al-Bukhari' was compiled by:", options: ["Imam Muslim", "Imam Malik", "Imam Al-Bukhari", "Imam Ahmad"], answer: "C" },
+  
+  { q: "The pilgrimage to Makkah at any time other than Hajj is:", options: ["Umrah", "Ziyarah", "Tawaf", "Sa'i"], answer: "A" },
+  
+  { q: "Who was the first Mu'adhin (caller to prayer) in Islam?", options: ["Abu Bakr", "Bilal ibn Rabah", "Umar ibn al-Khattab", "Zayd ibn Harithah"], answer: "B" },
+  
+  { q: "The term 'Shirk' means:", options: ["Stealing", "Lying", "Associating partners with Allah", "Breaking a fast"], answer: "C" },
+  
+  { q: "The first capital of the Islamic State was:", options: ["Makkah", "Madinah", "Damascus", "Baghdad"], answer: "B" },
+  
+  { q: "Dry ablution performed with clean soil is called:", options: ["Wudu", "Ghusl", "Tayammum", "Istinja"], answer: "C" },
+  
+  { q: "The Injeel (Gospel) was revealed to Prophet:", options: ["Musa", "Isa", "Dawud", "Ibrahim"], answer: "B" },
+  
+  
+  { q: "How many Takbirs are in the first Raka'at of Salat al-Eid?", options: ["5", "7", "3", "12"], answer: "B" },
+  
+  
+  { q: "The night in Ramadan when the Quran was first revealed is:", options: ["Laylatul Qadr", "Laylatul Isra", "Laylatul Mi'raj", "Laylatul Bara'ah"], answer: "A" },
+  
+  { q: "Prophet Muhammad (SAW) belonged to the tribe of:", options: ["Umayyad", "Quraysh", "Hashim", "Khazraj"], answer: "B" },
+  
+  { q: "The collection of the Prophet's traditions is known as:", options: ["Tafsir", "Hadith", "Sirah", "Fiqh"], answer: "B" },
+  
+  { q: "Which Prophet is known as 'Khalilullah' (Friend of Allah)?", options: ["Prophet Musa", "Prophet Ibrahim", "Prophet Isa", "Prophet Nuh"], answer: "B" },
+  
+  { q: "The punishment for a false accusation of adultery (Qadhf) is:", options: ["50 lashes", "80 lashes", "100 lashes", "Stoning"], answer: "B" },
+  
+  { q: "The first mosque built in Islam was:", options: ["Masjid al-Haram", "Masjid al-Nabawi", "Masjid Quba", "Masjid al-Aqsa"], answer: "C" },
+  
+  { q: "The struggle in the cause of Allah is known as:", options: ["Zakat", "Jihad", "Hajj", "Ihsan"], answer: "B" },
+  
+  { q: "Which Surah does not start with 'Bismillah'?", options: ["Surah At-Tawbah", "Surah An-Naml", "Surah Al-Fatihah", "Surah Al-Alaq"], answer: "A" },
+  
+  { q: "The term 'Halal' means:", options: ["Forbidden", "Lawful/Permissible", "Disliked", "Recommended"], answer: "B" },
+  
+  { q: "The wife of the Prophet who was the daughter of Abu Bakr was:", options: ["Khadijah", "Aisha", "Sawdah", "Zaynab"], answer: "B" },
+  
+  { q: "The Taurat (Torah) was revealed to Prophet:", options: ["Isa", "Musa", "Dawud", "Ibrahim"], answer: "B" },
+  
+  { q: "The Islamic calendar is based on the:", options: ["Solar cycle", "Lunar cycle", "Seasonal cycle", "Stars"], answer: "B" },
+  
+  { q: "The Arabic word for 'Successor' is:", options: ["Imam", "Khalifah", "Sultan", "Amir"], answer: "B" },
+  
+  { q: "Surah Al-Ikhlas emphasizes the concept of:", options: ["Prophethood", "Tawheed", "Charity", "Afterlife"], answer: "B" },
+  
+  { q: "The journey of the Prophet to the heavens is called:", options: ["Isra", "Mi'raj", "Hijrah", "Rihlah"], answer: "B" },
+  
+  { q: "How many Sajdah (prostrations) are in the Quran?", options: ["10", "12", "14", "15"], answer: "C" }
+ ],
+ Literature: [
+  { q: "A poem of fourteen lines is called a:", options: ["Sonnet", "Lyric", "Ode", "Elegy"], answer: "A" },
+  
+  { q: "The person telling a story in a novel is the:", options: ["Protagonist", "Antagonist", "Narrator", "Playwright"], answer: "C" },
+  
+  { q: "The use of 'like' or 'as' to compare two things is:", options: ["Metaphor", "Simile", "Personification", "Hyperbole"], answer: "B" },
+  
+  { q: "A play that ends on a sad or disastrous note is a:", options: ["Comedy", "Tragedy", "Farce", "Melodrama"], answer: "B" },
+  
+  { q: "Giving human qualities to non-human things is:", options: ["Alliteration", "Oxymoron", "Personification", "Irony"], answer: "C" },
+  
+  
+  { q: "The main character in a literary work is the:", options: ["Villain", "Protagonist", "Chorus", "Foil"], answer: "B" },
+
+  { q: "A mourning poem written for someone who is dead is an:", options: ["Elegy", "Epic", "Epigram", "Ode"], answer: "A" },
+  
+  { q: "The repetition of vowel sounds in a line of poetry is:", options: ["Alliteration", "Assonance", "Onomatopoeia", "Pun"], answer: "B" },
+  
+ 
+ { q: "The sequence of events in a story is the:", options: ["Setting", "Theme", "Plot", "Climax"], answer: "C" },
+
+ { q: "A humorous use of words that sound alike but have different meanings is a:", options: ["Pun", "Paradox", "Sarcasm", "Satire"], answer: "A" },
+
+ { q: "The central idea or message of a work is the:", options: ["Motive", "Subject", "Theme", "Genre"], answer: "C" },
+
+ { q: "A speech made by a character alone on stage is a:", options: ["Dialogue", "Monologue", "Soliloquy", "Prologue"], answer: "C" },
+
+ { q: "The physical location and time of a story is the:", options: ["Atmosphere", "Setting", "Context", "Background"], answer: "B" },
+
+ { q: "A direct comparison without the use of 'like' or 'as' is a:", options: ["Simile", "Metaphor", "Symbol", "Allegory"], answer: "B" },
+
+
+ { q: "The use of words that imitate sounds is:", options: ["Onomatopoeia", "Alliteration", "Rhyme", "Rhythm"], answer: "A" },
+
+ { q: "A character who provides a contrast to the protagonist is a:", options: ["Hero", "Foil", "Messenger", "Shadow"], answer: "B" },
+
+ { q: "The highest point of tension in a plot is the:", options: ["Resolution", "Exposition", "Climax", "Falling action"], answer: "C" },
+
+ { q: "A story that teaches a moral lesson using animals as characters is a:", options: ["Myth", "Legend", "Fable", "Parable"], answer: "C" },
+
+ { q: "An exaggerated statement not meant to be taken literally is:", options: ["Litotes", "Hyperbole", "Euphemism", "Irony"], answer: "B" },
+
+ { q: "The introduction to a play or novel is the:", options: ["Epilogue", "Prologue", "Preface", "Appendix"], answer: "B" },
+
+ { q: "A poem that tells a story is a:", options: ["Ballad", "Lyric", "Sonnet", "Haiku"], answer: "A" },
+
+ { q: "When the audience knows something the characters do not, it is:", options: ["Verbal irony", "Situational irony", "Dramatic irony", "Sarcasm"], answer: "C" },
+
+ { q: "The struggle between opposing forces in a story is:", options: ["Conflict", "Resolution", "Irony", "Imagery"], answer: "A" },
+
+ { q: "Two contradictory words used together (e.g., 'bittersweet') is an:", options: ["Oxymoron", "Paradox", "Irony", "Synecdoche"], answer: "A" },
+
+ { q: "The final part of a play where the strands of the plot are tied together is the:", options: ["Denouement", "Climax", "Prologue", "Rising Action"], answer: "A" },
+
+ { q: "A long narrative poem celebrating the deeds of a hero is an:", options: ["Ode", "Epic", "Elegy", "Lyric"], answer: "B" },
+
+ { q: "The use of a part to represent the whole is:", options: ["Metonymy", "Synecdoche", "Allusion", "Symbolism"], answer: "B" },
+
+ { q: "A short, witty statement is an:", options: ["Epigram", "Epitaph", "Euphemism", "Enjambment"], answer: "A" },
+
+ { q: "The 'voice' that speaks in a poem is called the:", options: ["Author", "Persona", "Narrator", "Protagonist"], answer: "B" },
+
+ { q: "A light, humorous play with a happy ending is a:", options: ["Tragedy", "Comedy", "Melodrama", "Farce"], answer: "B" },
+
+ { q: "The repetition of consonant sounds at the beginning of words is:", options: ["Assonance", "Alliteration", "Rhyme", "Consonance"], answer: "B" },
+
+ { q: "An inscription on a tombstone is an:", options: ["Epitaph", "Epilogue", "Epistle", "Epigram"], answer: "A" },
+
+ { q: "A mild or indirect word substituted for one considered harsh is a:", options: ["Hyperbole", "Euphemism", "Litotes", "Metaphor"], answer: "B" },
+
+ { q: "The specific choice of words by an author is known as:", options: ["Diction", "Syntax", "Tone", "Style"], answer: "A" },
+
+ { q: "A story where characters and events represent abstract ideas is an:", options: ["Allegory", "Allusion", "Anecdote", "Analogy"], answer: "A" },
+
+ { q: "The attitude of the author toward the subject is the:", options: ["Mood", "Tone", "Diction", "Atmosphere"], answer: "B" },
+
+ { q: "A play that uses exaggerated physical humor is a:", options: ["Comedy", "Farce", "Satire", "Tragedy"], answer: "B" },
+
+{ q: "A reference to a well-known person, place, or event is an:", options: ["Allusion", "Illusion", "Imagery", "Inversion"], answer: "A" },
+
+ { q: "A long speech by one character in a play is a:", options: ["Dialogue", "Soliloquy", "Monologue", "Epilogue"], answer: "C" },
+
+ { q: "The emotional quality or 'feeling' of a literary work is its:", options: ["Theme", "Tone", "Mood", "Setting"], answer: "C" }
+],
+  CRS: [ 
+ { q: "God created the firmament on the:", options: ["First day", "Second day", "Third day", "Fourth day"], answer: "B" },
+  
+  { q: "The sign of the covenant between God and Noah was the:", options: ["Circumcision", "Rainbow", "Altar", "Sacrifice"], answer: "B" },
+  
+  { q: "Moses' father-in-law was:", options: ["Jethro", "Aaron", "Joshua", "Caleb"], answer: "A" },
+  
+  { q: "The first king of Israel was:", options: ["David", "Solomon", "Saul", "Samuel"], answer: "C" },
+  
+  { q: "Elijah defeated the prophets of Baal at:", options: ["Mount Sinai", "Mount Nebo", "Mount Carmel", "Mount Hebron"], answer: "C" },
+  
+  
+  { q: "The 'Man after God's own heart' refers to:", options: ["Saul", "David", "Solomon", "Moses"], answer: "B" },
+  
+  { q: "The prophet who was swallowed by a great fish was:", options: ["Amos", "Hosea", "Jonah", "Micah"], answer: "C" },
+  
+  { q: "Jesus was born in:", options: ["Nazareth", "Jerusalem", "Bethlehem", "Galilee"], answer: "C" },
+  
+  { q: "The forerunner of Jesus was:", options: ["John the Apostle", "John the Baptist", "Peter", "James"], answer: "B" },
+  
+  { q: "How many disciples did Jesus choose?", options: ["10", "12", "7", "70"], answer: "B" },
+  
+  
+  { q: "The first miracle of Jesus was at:", options: ["Capernaum", "Cana", "Bethsaida", "Jericho"], answer: "B" },
+  
+  { q: "Who betrayed Jesus?", options: ["Peter", "Judas Iscariot", "Thomas", "Andrew"], answer: "B" },
+  
+  { q: "The Holy Spirit descended on the disciples on the day of:", options: ["Passover", "Pentecost", "Tabernacles", "Sabbath"], answer: "B" },
+  
+  { q: "The first Christian martyr was:", options: ["Stephen", "Paul", "James", "Philip"], answer: "A" },
+  
+  
+  { q: "Saul's name was changed to Paul on the way to:", options: ["Jerusalem", "Damascus", "Antioch", "Rome"], answer: "B" },
+  
+  { q: "The 'Prodigal Son' parable teaches about:", options: ["Hard work", "God's forgiveness", "Greed", "Laziness"], answer: "B" },
+  
+  { q: "Abraham's original home was:", options: ["Haran", "Ur", "Canaan", "Egypt"], answer: "B" },
+ 
+  { q: "Joseph was sold to Egypt for how many pieces of silver?", options: ["10", "20", "30", "50"], answer: "B" },
+  
+  
+  { q: "Who led the Israelites into the Promised Land?", options: ["Moses", "Joshua", "Caleb", "Gideon"], answer: "B" },
+  
+  { q: "The person who built the first temple in Jerusalem was:", options: ["David", "Solomon", "Hezekiah", "Josiah"], answer: "B" },
+  
+  { q: "God appeared to Moses in a:", options: ["Dream", "Cloud", "Burning bush", "Thunder"], answer: "C" },
+  
+  { q: "The commandment 'Honour your father and mother' is the:", options: ["First", "Third", "Fifth", "Tenth"], answer: "C" },
+  
+  { q: "The tax collector who climbed a sycamore tree to see Jesus was:", options: ["Matthew", "Zacchaeus", "Levi", "Cornelius"], answer: "B" },
+  
+  { q: "Jesus fed five thousand people with:", options: ["5 loaves and 2 fish", "7 loaves and 3 fish", "2 loaves and 5 fish", "12 loaves"], answer: "A" },
+  
+  { q: "The garden where Jesus prayed before his arrest was:", options: ["Eden", "Gethsemane", "Golgotha", "Olives"], answer: "B" },
+  
+  { q: "The Roman Governor who sentenced Jesus to death was:", options: ["Herod", "Pontius Pilate", "Felix", "Festus"], answer: "B" },
+  
+  
+  { q: "The place where Jesus was crucified was called:", options: ["Gethsemane", "Golgotha", "Bethany", "Zion"], answer: "B" },
+  
+  { q: "Paul was known as the Apostle to the:", options: ["Jews", "Gentiles", "Romans", "Greeks"], answer: "B" },
+  
+  { q: "How many books are in the New Testament?", options: ["27", "39", "66", "12"], answer: "A" },
+  
+  
+  { q: "The prophet who was taken to heaven in a whirlwind was:", options: ["Elijah", "Elisha", "Isaiah", "Ezekiel"], answer: "A" },
+  
+  { q: "Who was the wife of Isaac?", options: ["Sarah", "Rebekah", "Rachel", "Leah"], answer: "B" },
+  
+  { q: "The city whose walls fell after the Israelites marched around it was:", options: ["Ai", "Jericho", "Gaza", "Sidon"], answer: "B" },
+  
+  { q: "The strongest man in the Bible was:", options: ["Samson", "David", "Goliath", "Solomon"], answer: "A" },
+  
+  { q: "The disciple who doubted the resurrection of Jesus was:", options: ["Peter", "Thomas", "Philip", "Bartholomew"], answer: "B" },
+  
+  { q: "The shortest verse in the Bible is:", options: ["God is love", "Jesus wept", "Pray without ceasing", "Rejoice always"], answer: "B" },
+  
+  { q: "The Fruit of the Spirit is found in the book of:", options: ["Romans", "Galatians", "Ephesians", "Corinthians"], answer: "B" },
+  
+  
+  { q: "Who wrote the Acts of the Apostles?", options: ["Paul", "Luke", "Peter", "John"], answer: "B" },
+  
+  { q: "The first king of the Northern Kingdom of Israel was:", options: ["Rehoboam", "Jeroboam", "Ahab", "Jehu"], answer: "B" },
+  
+  { q: "God's name 'I AM THAT I AM' was revealed to:", options: ["Abraham", "Moses", "Jacob", "Samuel"], answer: "B" },
+  
+  { q: "The wise men from the East brought gifts of gold, frankincense and:", options: ["Silver", "Myrrh", "Diamond", "Bronze"], answer: "B" }
+ ],  
+  Economics: [
+{ q: "The basic economic problem of all societies is:", options: ["Inflation", "Unemployment", "Scarcity", "Poverty"], answer: "C" },
+  
+  { q: "A firm's main objective is to maximize:", options: ["Sales", "Output", "Profit", "Revenue"], answer: "C" },
+  
+  { q: "The law of demand states that as price increases, quantity demanded:", options: ["Increases", "Decreases", "Remains constant", "Fluctuates"], answer: "B" },
+  
+  { q: "Opportunity cost is also known as:", options: ["Total cost", "Real cost", "Variable cost", "Marginal cost"], answer: "B" },
+  
+  { q: "Which of the following is a factor of production?", options: ["Money", "Labor", "Transport", "Advertising"], answer: "B" },
+  
+  { q: "The reward for land as a factor of production is:", options: ["Wages", "Interest", "Profit", "Rent"], answer: "D" },
+  
+  { q: "A market situation with only one seller is a:", options: ["Monopoly", "Oligopoly", "Duopoly", "Perfect competition"], answer: "A" },
+  
+  { q: "The total value of goods and services produced within a country is:", options: ["GNP", "GDP", "NNP", "Per Capita Income"], answer: "B" },
+  
+  { q: "Inflation caused by an increase in production costs is:", options: ["Demand-pull", "Cost-push", "Hyperinflation", "Creeping inflation"], answer: "B" },
+  
+  { q: "Human wants are said to be:", options: ["Limited", "Inexhaustible", "Satiable", "Few"], answer: "B" },
+  
+  { q: "A budget with a deficit means:", options: ["Income = Expenditure", "Income > Expenditure", "Expenditure > Income", "No income"], answer: "C" },
+  
+  { q: "The father of modern economics is:", options: ["Adam Smith", "David Ricardo", "John Keynes", "Alfred Marshall"], answer: "A" },
+  
+  { q: "The point where demand and supply curves intersect is:", options: ["Surplus", "Shortage", "Equilibrium", "Maximum"], answer: "C" },
+  
+  { q: "Which of the following is a direct tax?", options: ["Value Added Tax", "Excise duty", "Income tax", "Import duty"], answer: "C" },
+  
+  { q: "Money serves as a medium of:", options: ["Production", "Exchange", "Consumption", "Distribution"], answer: "B" },
+  
+  { q: "The population of a country is the:", options: ["Number of children", "Number of workers", "Total inhabitants", "Number of adults"], answer: "C" },
+  
+  { q: "Elasticity of demand measures the responsiveness of demand to:", options: ["Taste", "Price changes", "Supply", "Weather"], answer: "B" },
+  
+  { q: "A public limited company is owned by:", options: ["The government", "Partners", "Shareholders", "A sole trader"], answer: "C" },
+  
+  { q: "The main reason for international trade is:", options: ["Language difference", "Currency difference", "Absolute advantage", "Political ties"], answer: "C" },
+  
+  { q: "The apex bank in Nigeria is:", options: ["First Bank", "Central Bank of Nigeria", "World Bank", "Zenith Bank"], answer: "B" },
+  
+  { q: "A decrease in the value of a currency is:", options: ["Appreciation", "Depreciation", "Devaluation", "Deflation"], answer: "B" },
+  
+  { q: "The 'Labour Force' includes people within the ages of:", options: ["0-15", "18-65", "65-80", "10-20"], answer: "B" },
+  
+  { q: "Division of labor leads to:", options: ["Boredom", "Specialization", "Low output", "Waste of time"], answer: "B" },
+  
+  { q: "Which of the following is a barrier to trade?", options: ["Tariffs", "Free trade", "Exports", "High demand"], answer: "A" },
+  
+  { q: "The long run is a period where:", options: ["All factors are fixed", "All factors are variable", "Output is zero", "Time is short"], answer: "B" },
+  
+  { q: "Utility in economics means:", options: ["Usefulness", "Satisfaction", "Profit", "Hard work"], answer: "B" },
+  
+  { q: "A shift in the demand curve to the right indicates:", options: ["Decrease in demand", "Increase in demand", "Decrease in price", "Increase in price"], answer: "B" },
+  
+  { q: "Malthusian theory is related to:", options: ["Price", "Population", "Rent", "Wages"], answer: "B" },
+  
+  { q: "An inferior good is one whose demand falls as:", options: ["Price falls", "Income rises", "Price rises", "Supply falls"], answer: "B" },
+  
+  { q: "The primary sector of the economy includes:", options: ["Manufacturing", "Banking", "Agriculture", "Insurance"], answer: "C" },
+  
+  { q: "Externalities can be:", options: ["Positive only", "Negative only", "Positive or Negative", "Neutral"], answer: "C" },
+  
+  { q: "The main source of government revenue in Nigeria is:", options: ["Agriculture", "Taxes", "Crude Oil", "Tourism"], answer: "C" },
+  
+  { q: "The curve that shows the combinations of two goods a country can produce is:", options: ["Demand curve", "Supply curve", "Production Possibility Curve", "Indifference curve"], answer: "C" },
+  
+  { q: "Who controls the fiscal policy of a country?", options: ["Central Bank", "Commercial Banks", "The Government", "IMF"], answer: "C" },
+  
+  { q: "A stock exchange is a market for:", options: ["Groceries", "Shares and Stocks", "Labor", "Raw materials"], answer: "B" },
+  
+  { q: "Which of the following is a characteristic of money?", options: ["Bulkiness", "Portability", "Instability", "Scarcity"], answer: "B" },
+  
+  { q: "The reward for entrepreneurship is:", options: ["Interest", "Wages", "Rent", "Profit"], answer: "D" },
+  
+  { q: "A trade deficit occurs when:", options: ["Exports > Imports", "Imports > Exports", "Exports = Imports", "No trade"], answer: "B" },
+  
+  { q: "Demography is the study of:", options: ["Rocks", "Population", "Animals", "Wealth"], answer: "B" },
+  
+  { q: "The World Bank is also known as:", options: ["IMF", "IBRD", "WTO", "UN"], answer: "B" }
+
+],
+ HISTORY: [
+{ q: "The first capital of the Old Ghana Empire was:", options: ["Kumbi Saleh", "Timbuktu", "Gao", "Walata"], answer: "A" },
+ 
+  { q: "The trans-Saharan trade involved the exchange of:", options: ["Oil and Water", "Gold and Salt", "Silk and Silver", "Corn and Wheat"], answer: "B" },
+  
+  { q: "Mansa Musa was a famous ruler of:", options: ["Songhai Empire", "Mali Empire", "Kanem-Borno", "Asante Empire"], answer: "B" },
+  
+  { q: "The Sokoto Caliphate was founded by:", options: ["Uthman dan Fodio", "Ahmadou Seku", "Sultan Bello", "El-Kanemi"], answer: "A" },
+  
+  { q: "The Berlin Conference of 1884-1885 was for the:", options: ["End of Slavery", "Partition of Africa", "Industrial Revolution", "World War I"], answer: "B" },
+  
+  { q: "The Nok culture is famous for its:", options: ["Bronze castings", "Terracotta sculptures", "Iron smelting", "Glass work"], answer: "B" },
+  
+  { q: "The first Portuguese explorer to reach Benin was:", options: ["Vasco da Gama", "Ruy de Sequeira", "Christopher Columbus", "John Cabot"], answer: "B" },
+  
+  { q: "The capital of the Songhai Empire was:", options: ["Timbuktu", "Gao", "Jenne", "Agadez"], answer: "B" },
+  
+  { q: "The Aba Women's Riot occurred in:", options: ["1914", "1929", "1960", "1945"], answer: "B" },
+  
+  { q: "Nigeria became a Republic in:", options: ["1960", "1963", "1979", "1999"], answer: "B" },
+  
+  { q: "The first Prime Minister of Nigeria was:", options: ["Nnamdi Azikiwe", "Abubakar Tafawa Balewa", "Obafemi Awolowo", "Ahmadu Bello"], answer: "B" },
+  
+  { q: "The League of Nations was formed after:", options: ["World War I", "World War II", "French Revolution", "Cold War"], answer: "A" },
+  
+  { q: "The Oyo Empire collapsed mainly due to internal conflict and the:", options: ["Fulani Jihad", "Atlantic Slave Trade", "British invasion", "Dahomey war"], answer: "A" },
+  
+  { q: "Sundiata Keita was the founder of:", options: ["Ghana Empire", "Mali Empire", "Benin Empire", "Oyo Empire"], answer: "B" },
+  
+  { q: "The primary reason for the Trans-Atlantic Slave Trade was:", options: ["Spread of religion", "Labor for American plantations", "Exploration", "Scientific research"], answer: "B" },
+  
+  { q: "The 'Golden Stool' is the symbol of authority in:", options: ["Oyo Empire", "Asante Empire", "Benin Kingdom", "Dahomey"], answer: "B" },
+  
+  { q: "Which of these was a major city of the Hausa Bakwai?", options: ["Kano", "Lagos", "Enugu", "Ibadan"], answer: "A" },
+  
+  { q: "The first military coup in Nigeria occurred in:", options: ["1966", "1975", "1983", "1993"], answer: "A" },
+  
+  { q: "The ancient city of Timbuktu was a center for:", options: ["Military training", "Islamic learning", "Shipbuilding", "Agriculture"], answer: "B" },
+  
+  { q: "The Yoruba god of iron is:", options: ["Sango", "Ogun", "Obatala", "Esu"], answer: "B" },
+  
+  { q: "The Scramble for Africa refers to:", options: ["Economic development", "European colonization", "Pan-Africanism", "Decolonization"], answer: "B" },
+  
+  { q: "The leader of the 1966 coup was:", options: ["Aguiyi-Ironsi", "Chukwuma Nzeogwu", "Murtala Muhammed", "Yakubu Gowon"], answer: "B" },
+  
+  { q: "The King of Benin is known as the:", options: ["Ooni", "Oba", "Alaafin", "Emir"], answer: "B" },
+  
+  { q: "Who was the first Nigerian President?", options: ["Nnamdi Azikiwe", "Yakubu Gowon", "Olusegun Obasanjo", "Shehu Shagari"], answer: "A" },
+  
+  { q: "The Mau Mau uprising took place in:", options: ["Nigeria", "Kenya", "Ghana", "South Africa"], answer: "B" },
+  
+  { q: "Nelson Mandela spent 27 years in prison for fighting:", options: ["Colonialism", "Apartheid", "Corruption", "Communism"], answer: "B" },
+  
+  { q: "The Magna Carta was signed in:", options: ["1215", "1776", "1789", "1945"], answer: "A" },
+  
+  { q: "The French Revolution began in:", options: ["1776", "1789", "1815", "1914"], answer: "B" },
+  
+  { q: "The ancient kingdom of Kanem-Borno was located near:", options: ["Lake Chad", "River Niger", "Atlantic Ocean", "Red Sea"], answer: "A" },
+  
+  { q: "The first female traditional ruler of the Zazzau (Zaria) was:", options: ["Queen Amina", "Queen Emotan", "Moremi", "Nana Asma’u"], answer: "A" },
+  
+  { q: "The Atlantic Charter was signed between:", options: ["UK and USA", "Germany and Italy", "Japan and China", "Nigeria and Ghana"], answer: "A" },
+  
+  { q: "Apartheid was a policy in:", options: ["Zimbabwe", "South Africa", "Namibia", "Angola"], answer: "B" },
+  
+  { q: "The Emancipation Proclamation (abolition of slavery in US) was by:", options: ["George Washington", "Abraham Lincoln", "Thomas Jefferson", "John Kennedy"], answer: "B" },
+  
+  { q: "The capital of the Zulu Kingdom was:", options: ["Ulundi", "Cape Town", "Pretoria", "Durban"], answer: "A" },
+  
+  { q: "The ancient Egyptians developed a writing system called:", options: ["Cuneiform", "Hieroglyphics", "Latin", "Arabic"], answer: "B" },
+  
+  { q: "Which explorer 'discovered' the mouth of the River Niger?", options: ["Mungo Park", "Richard Lander", "Clapperton", "Laird"], answer: "B" },
+  
+  { q: "The Second World War started in:", options: ["1914", "1939", "1945", "1918"], answer: "B" },
+  
+  { q: "Who was the last Prophet of Islam mentioned in history?", options: ["Isa", "Musa", "Muhammad", "Ibrahim"], answer: "C" },
+  
+  { q: "The Benin Bronzes were taken by the British in:", options: ["1897", "1914", "1960", "1884"], answer: "A" },
+  
+  { q: "The Cold War was between the USA and the:", options: ["UK", "Soviet Union", "China", "Germany"], answer: "B" }
+  ],
+ Commerce: [ 
+ { q: "Commerce is the study of trade and:", options: ["Industry", "Aids to trade", "Banking", "Accounting"], answer: "B" },
+  
+  { q: "Which of the following is an aid to trade?", options: ["Farming", "Insurance", "Mining", "Teaching"], answer: "B" },
+  
+  { q: "Wholesale trade involves buying in:", options: ["Small quantities", "Bulk", "Retail", "Pieces"], answer: "B" },
+  
+  { q: "A document used when goods are sent on 'approval' is:", options: ["Invoice", "Proforma Invoice", "Credit note", "Debit note"], answer: "B" },
+  
+  { q: "The exchange of goods for goods is:", options: ["Foreign trade", "Barter trade", "Retail trade", "Home trade"], answer: "B" },
+  
+  { q: "A business owned by 2 to 20 people is a:", options: ["Sole proprietorship", "Partnership", "Public Company", "Cooperative"], answer: "B" },
+  
+  { q: "The document that governs the internal management of a company is:", options: ["Memorandum of Association", "Articles of Association", "Prospectus", "Certificate of Trading"], answer: "B" },
+  
+  { q: "An agent who sells goods on behalf of a principal for a commission is a:", options: ["Broker", "Factor", "Del Credere Agent", "Jobber"], answer: "A" },
+  
+  { q: "Branding of goods helps in:", options: ["Storage", "Identification", "Transportation", "Pricing"], answer: "B" },
+  
+  { q: "A market where shares and stocks are bought and sold is:", options: ["Commodity market", "Stock exchange", "Money market", "Black market"], answer: "B" },
+  
+  { q: "The process of informing the public about a product is:", options: ["Personal selling", "Advertising", "Warehousing", "Insurance"], answer: "B" },
+  
+  { q: "Which of these is a function of a warehouse?", options: ["Packaging", "Price stabilization", "Transporting", "Manufacturing"], answer: "B" },
+  
+  { q: "The 'Caveat Emptor' rule means:", options: ["Seller beware", "Buyer beware", "Quality first", "No credit"], answer: "B" },
+  
+  { q: "The policy of 'Uberrimae Fidei' in insurance means:", options: ["Insurable interest", "Utmost good faith", "Proximate cause", "Indemnity"], answer: "B" },
+  
+  { q: "A cheque that is not paid by a bank is a:", options: ["Crossed cheque", "Dishonoured cheque", "Open cheque", "Stale cheque"], answer: "B" },
+  
+  { q: "A person who starts and manages a business is an:", options: ["Investor", "Entrepreneur", "Manager", "Employee"], answer: "B" },
+  
+  { q: "The activities involved in moving goods from producers to consumers is:", options: ["Production", "Distribution", "Banking", "Storage"], answer: "B" },
+  
+  { q: "Visible trade refers to the import and export of:", options: ["Services", "Tangible goods", "Labour", "Capital"], answer: "B" },
+  
+  { q: "The first stage of production is:", options: ["Primary", "Secondary", "Tertiary", "Quaternary"], answer: "A" },
+  
+  { q: "A public corporation is funded by:", options: ["Shareholders", "The Government", "Partners", "The Public"], answer: "B" },
+  
+  { q: "E-commerce stands for:", options: ["Efficient commerce", "Electronic commerce", "Effective commerce", "Easy commerce"], answer: "B" },
+  
+  { q: "Which of these is a container for sea transport?", options: ["Sack", "Container", "Basket", "Crate"], answer: "B" },
+  
+  { q: "A document showing that a person is a part-owner of a company is a:", options: ["Bond", "Share certificate", "Debenture", "Manifest"], answer: "B" },
+  
+  { q: "The act of protecting the interest of consumers is:", options: ["Socialism", "Consumerism", "Capitalism", "Bureaucracy"], answer: "B" },
+  
+  { q: "A trade across national boundaries is:", options: ["Home trade", "International trade", "Internal trade", "Local trade"], answer: "B" },
+  
+  { q: "A long-term loan to a company is a:", options: ["Share", "Debenture", "Overdraft", "Grant"], answer: "B" },
+  
+  { q: "The compensation paid for loss in insurance is:", options: ["Premium", "Indemnity", "Bonus", "Dividend"], answer: "B" },
+  
+  { q: "The link between the producer and the retailer is the:", options: ["Consumer", "Wholesaler", "Agent", "Broker"], answer: "B" },
+  
+  { q: "Which bank is the lender of last resort?", options: ["Commercial bank", "Central bank", "Merchant bank", "Microfinance bank"], answer: "B" },
+  
+  { q: "A person who buys goods to use them is a:", options: ["Wholesaler", "Consumer", "Retailer", "Manufacturer"], answer: "B" },
+  
+  
+  { q: "Communication is the transfer of:", options: ["Goods", "Information", "Money", "Labour"], answer: "B" },
+  
+  { q: "The profit made from selling shares at a higher price is:", options: ["Dividend", "Capital gain", "Interest", "Rent"], answer: "B" },
+  
+  
+  { q: "A contract to hire a ship for a particular voyage is a:", options: ["Bill of Lading", "Charter Party", "Consignment Note", "Manifest"], answer: "B" },
+  
+  
+  { q: "The abbreviation 'PLC' stands for:", options: ["Private Limited Company", "Public Limited Company", "People Limited Company", "Public Life Company"], answer: "B" },
+  
+  { q: "A vending machine is a form of:", options: ["Wholesale", "Automatic retailing", "Large scale production", "Marketing"], answer: "B" },
+  
+  { q: "The main purpose of a trade fair is:", options: ["Competition", "Promotion of goods", "Direct sales", "Storage"], answer: "B" },
+  
+  { q: "Which of the following is a non-renewable resource?", options: ["Wind", "Petroleum", "Water", "Solar"], answer: "B" },
+  
+  { q: "The tax levied on locally manufactured goods is:", options: ["Customs duty", "Excise duty", "Value added tax", "Stamp duty"], answer: "B" },
+  
+  { q: "A market situation where there are few sellers is:", options: ["Monopoly", "Oligopoly", "Duopoly", "Perfect competition"], answer: "B" },
+  
+  { q: "The document that acknowledges the receipt of goods on a ship is the:", options: ["Invoice", "Bill of Lading", "Credit note", "Debit note"], answer: "B" }
+
+  ],
+  Accounting: [ 
+{ q: "The process of recording, classifying and summarizing financial transactions is:", options: ["Auditing", "Accounting", "Bookkeeping", "Budgeting"], answer: "B" },
+  
+  { q: "The accounting equation is:", options: ["Assets = Liabilities + Capital", "Assets + Liabilities = Capital", "Liabilities = Assets + Capital", "Capital = Assets + Liabilities"], answer: "A" },
+  
+  { q: "A credit entry in the bank account means:", options: ["Money received", "Money paid out", "Profit made", "Loss incurred"], answer: "B" },
+  
+  { q: "Which of the following is a nominal account?", options: ["Cash account", "Building account", "Rent account", "Debtors account"], answer: "C" },
+  
+  { q: "The primary book of original entry is the:", options: ["Ledger", "Journal", "Cash book", "Trial balance"], answer: "B" },
+  
+  { q: "A list of balances extracted from the ledger is a:", options: ["Balance sheet", "Trading account", "Trial balance", "Profit and loss account"], answer: "C" },
+  
+  { q: "The person to whom a business owes money is a:", options: ["Debtor", "Creditor", "Shareholder", "Director"], answer: "B" },
+  
+  { q: "Depreciation is the permanent decrease in the value of:", options: ["Current assets", "Fixed assets", "Intangible assets", "Liabilities"], answer: "B" },
+  
+  { q: "The excess of current assets over current liabilities is:", options: ["Fixed capital", "Working capital", "Total capital", "Net profit"], answer: "B" },
+  
+  { q: "A petty cash book is used for:", options: ["Large payments", "Small payments", "Credit sales", "Bank deposits"], answer: "B" },
+  
+  { q: "The 'double entry' principle states that every transaction must have a:", options: ["Debit and Credit", "Single entry", "Journal and Ledger", "Profit and Loss"], answer: "A" },
+  
+  { q: "A debit balance in the cash book indicates:", options: ["Overdraft", "Cash in hand", "Bank charges", "Loss"], answer: "B" },
+  
+  
+  { q: "Goodwill is an example of an:", options: ["Intangible asset", "Current asset", "Fixed asset", "Liability"], answer: "A" },
+  
+  
+  { q: "The Trading Account is prepared to find the:", options: ["Net Profit", "Gross Profit", "Net Loss", "Working Capital"], answer: "B" },
+  
+  { q: "Bad debts are debts that:", options: ["Are paid early", "Cannot be recovered", "Are collected in full", "Carry high interest"], answer: "B" },
+  
+  { q: "The error where a transaction is completely omitted from the books is:", options: ["Error of principle", "Error of omission", "Error of commission", "Compensating error"], answer: "B" },
+  
+  { q: "Accumulated fund is a term used in:", options: ["Partnership", "Non-profit making organizations", "Public companies", "Sole traders"], answer: "B" },
+  
+  { q: "A bank reconciliation statement is prepared to reconcile:", options: ["Cash and Bank", "Cash book and Bank statement", "Debtors and Creditors", "Sales and Purchases"], answer: "B" },
+  
+  { q: "The drawing account is closed by transferring the balance to:", options: ["Capital account", "Trading account", "Bank account", "Suspense account"], answer: "A" },
+  
+  { q: "Stock at the beginning of the year is:", options: ["Closing stock", "Opening stock", "Average stock", "Buffer stock"], answer: "B" },
+  
+  { q: "Carriage inwards is an expense incurred on:", options: ["Sales", "Purchases", "Fixed assets", "Returns"], answer: "B" },
+  
+  { q: "Which of these is a source document?", options: ["Ledger", "Invoice", "Trial balance", "Journal"], answer: "B" },
+  
+  { q: "A suspense account is used to:", options: ["Hide errors", "Balance a trial balance temporarily", "Record drawings", "Show depreciation"], answer: "B" },
+  
+  { q: "In a partnership, profit is shared according to:", options: ["Capital contributed", "The partnership deed", "Equal shares", "Seniority"], answer: "B" },
+  
+  
+  { q: "The value of a business above its net assets is:", options: ["Capital", "Goodwill", "Revenue", "Investment"], answer: "B" },
+  
+  { q: "A contra entry occurs in the:", options: ["Sales journal", "Three-column cash book", "Purchases ledger", "Petty cash book"], answer: "B" },
+  
+  { q: "Net profit is found in the:", options: ["Trading account", "Profit and Loss account", "Balance sheet", "Cash book"], answer: "B" },
+  
+  { q: "Fixed assets are shown in the balance sheet at:", options: ["Market value", "Cost less depreciation", "Original cost", "Expected value"], answer: "B" },
+  
+  { q: "The discount allowed by a wholesaler for bulk buying is:", options: ["Cash discount", "Trade discount", "Rebate", "Drawback"], answer: "B" },
+  
+  { q: "Prepaid expenses are shown in the balance sheet as:", options: ["Current assets", "Current liabilities", "Long-term liabilities", "Fixed assets"], answer: "A" },
+  
+  { q: "Accounting for the 'business as a separate entity' is:", options: ["Going concern", "Business entity concept", "Accrual concept", "Consistency"], answer: "B" },
+  
+  { q: "The document sent to a customer when he returns goods is a:", options: ["Debit note", "Credit note", "Invoice", "Receipt"], answer: "B" },
+  
+  { q: "Cost of Goods Sold = Opening Stock + Purchases - :", options: ["Gross Profit", "Closing Stock", "Sales", "Net Profit"], answer: "B" },
+  
+  { q: "An example of a current liability is:", options: ["Bank loan", "Bank overdraft", "Premises", "Machinery"], answer: "B" },
+  
+  { q: "The ledger contains:", options: ["Source documents", "Accounts", "The trial balance", "Journal entries"], answer: "B" },
+  
+  { q: "Accrued income is income:", options: ["Received in advance", "Earned but not yet received", "Not yet earned", "Given away"], answer: "B" },
+  
+  { q: "A credit note received is recorded in the:", options: ["Sales returns journal", "Purchases returns journal", "Cash book", "General journal"], answer: "B" },
+  
+  { q: "Capital + Liabilities = :", options: ["Profit", "Assets", "Loss", "Revenue"], answer: "B" },
+  
+  { q: "Real accounts are for:", options: ["Expenses", "Income", "Tangible assets", "Persons"], answer: "C" },
+  
+  { q: "The 'imprest system' is associated with:", options: ["Sales journal", "Petty cash book", "General ledger", "Balance sheet"], answer: "B" }
+ ], 
+ Geography: [
+{ q: "The innermost layer of the Earth is the:", options: ["Crust", "Mantle", "Core", "Lithosphere"], answer: "C" },
+ 
+  { q: "The planet closest to the sun is:", options: ["Earth", "Venus", "Mars", "Mercury"], answer: "D" },
+ 
+  { q: "Rocks formed from the cooling of molten magma are:", options: ["Sedimentary", "Metamorphic", "Igneous", "Calcareous"], answer: "C" },
+ 
+  { q: "An instrument used to measure atmospheric pressure is the:", options: ["Thermometer", "Hygrometer", "Barometer", "Anemometer"], answer: "C" },
+ 
+  { q: "The point on the Earth's surface directly above the focus of an earthquake is the:", options: ["Epicenter", "Fault", "Crater", "Seismic"], answer: "A" },
+ 
+  { q: "Lines on a map joining places with the same temperature are:", options: ["Isobars", "Isohyets", "Isotherms", "Isohels"], answer: "C" },
+ 
+  { q: "The largest ocean in the world is the:", options: ["Atlantic", "Indian", "Arctic", "Pacific"], answer: "D" },
+ 
+ 
+  { q: "Which of the following is a volcanic mountain in Africa?", options: ["Atlas", "Kilimanjaro", "Everest", "Andes"], answer: "B" },
+ 
+  { q: "The process by which rocks break down in situ is:", options: ["Erosion", "Weathering", "Deposition", "Mass wasting"], answer: "B" },
+ 
+  { q: "The latitude that divides the Earth into Northern and Southern Hemispheres is:", options: ["Equator", "Tropic of Cancer", "Tropic of Capricorn", "Arctic Circle"], answer: "A" },
+ 
+  { q: "A narrow strip of land connecting two large landmasses is an:", options: ["Island", "Isthmus", "Archipelago", "Estuary"], answer: "B" },
+ 
+ 
+  { q: "The movement of people from rural areas to urban areas is:", options: ["Migration", "Urbanization", "Immigration", "Emigration"], answer: "B" },
+ 
+  { q: "Which of these is a sedimentary rock?", options: ["Granite", "Marble", "Limestone", "Quartzite"], answer: "C" },
+ 
+  { q: "The time difference between two places $15^\\circ$ longitude apart is:", options: ["4 minutes", "15 minutes", "1 hour", "2 hours"], answer: "C" },
+ 
+  { q: "Wind speed is measured with an:", options: ["Anemometer", "Wind vane", "Rain gauge", "Thermometer"], answer: "A" },
+ 
+  { q: "The highest mountain peak in the world is:", options: ["K2", "Everest", "Kilimanjaro", "Mont Blanc"], answer: "B" },
+ 
+  { q: "The study of population is called:", options: ["Geology", "Demography", "Cartography", "Meteorology"], answer: "B" },
+ 
+  { q: "Which river is the longest in Africa?", options: ["Niger", "Congo", "Nile", "Zambezi"], answer: "C" },
+ 
+  { q: "The atmospheric layer closest to the Earth's surface is the:", options: ["Stratosphere", "Mesosphere", "Troposphere", "Thermosphere"], answer: "C" },
+ 
+  { q: "Agriculture that involves both crop and animal farming is:", options: ["Mixed farming", "Shifting cultivation", "Plantation", "Pastoralism"], answer: "A" },
+ 
+  { q: "The type of rainfall common in the tropics is:", options: ["Cyclonic", "Convectional", "Relief", "Frontal"], answer: "B" },
+ 
+  { q: "A map that shows the relief and features of a small area is a:", options: ["Political map", "Topographic map", "Thematic map", "Cadastral map"], answer: "B" },
+ 
+  { q: "The largest continent by land area is:", options: ["Africa", "Asia", "North America", "Europe"], answer: "B" },
+ 
+  { q: "The ozone layer protects us from:", options: ["X-rays", "Ultraviolet rays", "Gamma rays", "Infrared"], answer: "B" },
+ 
+  { q: "The primary source of energy for the water cycle is:", options: ["Gravity", "The sun", "Wind", "Ocean currents"], answer: "B" },
+ 
+  { q: "The delta of the River Niger is in:", options: ["Nigeria", "Mali", "Niger", "Guinea"], answer: "A" },
+ 
+  { q: "The imaginary line at $0^\\circ$ longitude is the:", options: ["Equator", "Prime Meridian", "International Date Line", "Tropic of Cancer"], answer: "B" },
+ 
+  { q: "The soil type found mostly in desert regions is:", options: ["Laterite", "Podzol", "Sierozem", "Chernozem"], answer: "C" },
+ 
+  { q: "A delta formed at the mouth of a river is a:", options: ["Erosional feature", "Depositional feature", "Volcanic feature", "Tectonic feature"], answer: "B" },
+ 
+  { q: "The scale of a map expressed as a ratio (e.g. 1:50,000) is a:", options: ["Linear scale", "Representative Fraction", "Statement scale", "Diagonal scale"], answer: "B" },
+ 
+  { q: "The rotation of the Earth causes:", options: ["Seasons", "Day and Night", "Eclipses", "Tides"], answer: "B" },
+ 
+  { q: "The main occupation in the Nile Valley is:", options: ["Mining", "Fishing", "Agriculture", "Manufacturing"], answer: "C" },
+ 
+  { q: "Vegetation consisting of grasses and scattered trees is:", options: ["Tropical Rainforest", "Savanna", "Desert", "Tundra"], answer: "B" },
+ 
+  { q: "The deep part of a river valley is the:", options: ["Catchment", "Thalweg", "Watershed", "Levee"], answer: "B" },
+ 
+  { q: "An ox-bow lake is a feature of a:", options: ["Young river", "Mature river", "Old river", "Glacier"], answer: "C" },
+ 
+  { q: "Solar energy is obtained from:", options: ["Wind", "Sun", "Water", "Plants"], answer: "B" },
+ 
+  { q: "The capital city of Nigeria is:", options: ["Lagos", "Kano", "Abuja", "Port Harcourt"], answer: "C" },
+ 
+  { q: "Clouds that are fluffy and look like cotton wool are:", options: ["Stratus", "Cumulus", "Cirrus", "Nimbus"], answer: "B" },
+ 
+  { q: "The Great Barrier Reef is located off the coast of:", options: ["Africa", "Australia", "South America", "Asia"], answer: "B" },
+ 
+  { q: "The process of turning salty water into fresh water is:", options: ["Irrigation", "Desalination", "Condensation", "Evaporation"], answer: "B"},
+ ],
+   Agric: [ 
+ { q: "The process of removing excess water from the soil is:", options: ["Irrigation", "Drainage", "Mulching", "Leaching"], answer: "B" },
+ 
+  { q: "The practice of growing different crops on the same land in a sequence is:", options: ["Mixed cropping", "Crop rotation", "Monocropping", "Shifting cultivation"], answer: "B" },
+  
+  { q: "Which of the following is a biotic factor affecting agriculture?", options: ["Rainfall", "Temperature", "Pests", "Soil pH"], answer: "C" },
+ 
+  { q: "The most common method of land ownership in Nigeria is:", options: ["Leasehold", "Communal land tenure", "Freehold", "Gift"], answer: "B" },
+ 
+  { q: "The removal of the top layer of soil by water or wind is:", options: ["Erosion", "Weathering", "Deposition", "Mulching"], answer: "A" },
+ 
+  { q: "The gestation period of a sow (pig) is:", options: ["114 days", "280 days", "150 days", "60 days"], answer: "A" },
+ 
+  { q: "A farm tool used for making ridges is the:", options: ["Spade", "Hand hoe", "Rake", "Cutlass"], answer: "B" },
+ 
+  { q: "Which of these is a source of Nitrogen in the soil?", options: ["Potash", "Urea", "Phosphate", "Lime"], answer: "B" },
+ 
+  { q: "The act of giving birth in sheep is known as:", options: ["Kidding", "Lambing", "Calving", "Farrowing"], answer: "B" },
+ 
+  { q: "The first milk produced by an animal after birth is:", options: ["Skimmed milk", "Pasteurized milk", "Colostrum", "Whole milk"], answer: "C" },
+ 
+  { q: "A disease caused by a fungus in crops is:", options: ["Maize rust", "Cassava mosaic", "Citrus canker", "Swollen shoot"], answer: "A" },
+ 
+  { q: "The process of removing horns from an animal is:", options: ["Dehorning", "Castration", "Culling", "Docking"], answer: "A" },
+ 
+  { q: "Which of these is a fiber crop?", options: ["Oil palm", "Cotton", "Maize", "Groundnut"], answer: "B" },
+ 
+  { q: "A male bird castrated before maturity is a:", options: ["Cockerel", "Capon", "Rooster", "Hen"], answer: "B" },
+ 
+  { q: "The study of forest trees and their management is:", options: ["Horticulture", "Silviculture", "Agronomy", "Floriculture"], answer: "B" },
+ 
+  { q: "The chemical used to kill weeds is:", options: ["Insecticide", "Herbicide", "Fungicide", "Rodenticide"], answer: "B" },
+ 
+  { q: "Which of the following is a macro-nutrient for plants?", options: ["Zinc", "Iron", "Nitrogen", "Boron"], answer: "C" },
+ 
+  { q: "The process of mating in poultry is called:", options: ["Treading", "Tupping", "Serving", "Covering"], answer: "A" },
+ 
+  { q: "A castrated male cattle is called a:", options: ["Bull", "Steer", "Boar", "Wether"], answer: "B" },
+ 
+  { q: "The main purpose of a seedbed is to:", options: ["Add fertilizer", "Control pests", "Provide easy germination", "Improve soil color"], answer: "C" },
+ 
+  { q: "Ruminant animals have a stomach with how many compartments?", options: ["One", "Two", "Three", "Four"], answer: "D" },
+ 
+  { q: "The process of determining the quality of eggs is:", options: ["Culling", "Candling", "Grading", "Sorting"], answer: "B" },
+ 
+  { q: "Which of these is a cereal crop?", options: ["Soybean", "Rice", "Cassava", "Yam"], answer: "B" },
+ 
+  { q: "The tool used for measuring the area of a farm is:", options: ["Ranging pole", "Measuring tape", "Gunter’s chain", "Theodolite"], answer: "C" },
+ 
+  { q: "The transfer of pollen grains from the anther to the stigma is:", options: ["Germination", "Pollination", "Fertilization", "Transpiration"], answer: "B" },
+ 
+  { q: "The application of water to the soil by artificial means is:", options: ["Rainfall", "Irrigation", "Flooding", "Mulching"], answer: "B" },
+ 
+  { q: "The practice of keeping bees for honey is:", options: ["Sericulture", "Apiculture", "Aquaculture", "Horticulture"], answer: "B" },
+ 
+ 
+  { q: "A system of farming where the farmer produces only for his family is:", options: ["Commercial farming", "Subsistence farming", "Plantation farming", "Mixed farming"], answer: "B" },
+ 
+  { q: "The most important factor of production in agriculture is:", options: ["Capital", "Labor", "Land", "Management"], answer: "C" },
+ 
+  { q: "A disease of poultry that is highly contagious and viral is:", options: ["Coccidiosis", "Newcastle disease", "Anthrax", "Gumboro"], answer: "B" },
+ 
+  { q: "The science of soil management and crop production is:", options: ["Entomology", "Agronomy", "Pathology", "Botany"], answer: "B" },
+ 
+  { q: "The act of removing weak or diseased plants from a group is:", options: ["Pruning", "Thinning", "Culling", "Rouging"], answer: "D" },
+ 
+  { q: "The soil type with the highest water-holding capacity is:", options: ["Sandy soil", "Silty soil", "Clayey soil", "Loamy soil"], answer: "C" },
+ 
+  { q: "A crop that completes its life cycle in one year is an:", options: ["Annual", "Biennial", "Perennial", "Ephemeral"], answer: "A" },
+ 
+  { q: "The organ of respiration in fish is:", options: ["Lungs", "Gills", "Fin", "Scale"], answer: "B" },
+ 
+  { q: "The meat of a pig is called:", options: ["Beef", "Mutton", "Pork", "Veal"], answer: "C" },
+
+  { q: "Which farm animal is used mainly for work (draught)?", options: ["Goat", "Bullock", "Pig", "Rabbit"], answer: "B" },
+ 
+  { q: "The process of placing seeds in the soil to grow is:", options: ["Planting", "Sowing", "Harvesting", "Pruning"], answer: "B" },
+ 
+  { q: "A survey instrument used for measuring vertical angles is:", options: ["Prismatic compass", "Theodolite", "Arrow", "Abney level"], answer: "B" },
+ 
+  { q: "The study of diseases in plants and animals is:", options: ["Genetics", "Pathology", "Physiology", "Zoology"], answer: "B" }
+   ]
+};
+
+
+/* ============================================================
+   3. AUTHENTICATION (Login / Signup / Principal)
+   ============================================================ */
+function toggleAuth(mode) {
+    isSignupMode = (mode === 'signup');
+    const emailField = document.getElementById('userEmail');
+    const title = document.getElementById('authTitle');
+    const btn = document.getElementById('authBtn');
+    
+    if (isSignupMode) {
+        emailField.classList.remove('hidden');
+        title.innerText = "Create Account";
+        btn.innerText = "REGISTER & START";
+        document.getElementById('signupTab').classList.add('bg-white', 'shadow-sm');
+        document.getElementById('loginTab').classList.remove('bg-white', 'shadow-sm');
+    } else {
+        emailField.classList.add('hidden');
+        title.innerText = "Welcome Back";
+        btn.innerText = "ENTER TERMINAL";
+        document.getElementById('loginTab').classList.add('bg-white', 'shadow-sm');
+        document.getElementById('signupTab').classList.remove('bg-white', 'shadow-sm');
+    }
+}
+
+function handleAuth() {
+    const name = document.getElementById('studentName').value;
+    const pin = document.getElementById('regNumber').value;
+    const email = document.getElementById('userEmail').value;
+
+    if (pin === "hidden") {
+        alert("Admin Access Granted!");
+        const nav = document.querySelector('nav .max-w-6xl');
+        nav.innerHTML += `<a href="dashboard.html" class="bg-yellow-400 text-black px-4 py-2 rounded-full font-bold text-xs ml-4">📊 VIEW DASHBOARD</a>`;
+        return;
+    }
+
+    if (!name || !pin) return alert("Fill required fields!");
+
+    if (isSignupMode) {
+        if (!email) return alert("Email required for signup!");
+        let users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+        users.push({name, pin, email});
+        localStorage.setItem('registeredUsers', JSON.stringify(users));
+    } else {
+        let users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+        const user = users.find(u => u.name === name && u.pin === pin);
+        if (!user) return alert("Login failed. Check details or Sign Up.");
+    }
+
+    studentData = { name, reg: pin };
+    document.getElementById('loginBox').classList.add('hidden');
+    document.getElementById('subjectBox').classList.remove('hidden');
+    renderSubjectGrid();
+}
+
+/* ============================================================
+   4. EXAM INTERFACE LOGIC
+   ============================================================ */
+function renderSubjectGrid() {
+    const grid = document.getElementById('subjectGrid');
+    const subjects = Object.keys(qBank);
+    grid.innerHTML = subjects.map(sub => `
+        <label class="flex items-center p-4 border rounded-2xl cursor-pointer hover:bg-green-50 transition">
+            <input type="checkbox" name="subj" value="${sub}" class="w-5 h-5 accent-green-700 mr-3">
+            <span class="font-bold text-gray-700">${sub}</span>
+        </label>
+    `).join('');
+}
+
+function initiateExam() {
+    const selected = Array.from(document.querySelectorAll('input[name="subj"]:checked')).map(i => i.value);
+    if (selected.length !== 4) return alert("Select exactly 4 subjects!");
+
+    currentQuestions = [];
+    selected.forEach(sub => {
+        const tagged = qBank[sub].map(q => ({...q, tag: sub}));
+        currentQuestions.push(...shuffle(tagged));
+    });
+
+    userAnswers = new Array(currentQuestions.length).fill(null);
+    document.getElementById('subjectBox').classList.add('hidden');
+    document.getElementById('examBox').classList.remove('hidden');
+    document.getElementById('timerDisplay').classList.remove('hidden');
+    
+    startTimer();
+    showQuestion();
+    renderQuestionMap();
+}
+
+function showQuestion() {
+    const q = currentQuestions[currentIndex];
+    document.getElementById('currentSubjectLabel').innerText = q.tag;
+    document.getElementById('questionCounter').innerText = `Q ${currentIndex + 1} of ${currentQuestions.length}`;
+    document.getElementById('questionTitle').innerText = q.q;
+
+    document.getElementById('optionsContainer').innerHTML = q.options.map((opt, i) => `
+        <button onclick="selectOption(${i})" class="w-full text-left p-4 border-2 rounded-2xl transition ${userAnswers[currentIndex] === i ? 'border-green-700 bg-green-50' : 'border-gray-100'}">
+            <span class="font-bold mr-2">${String.fromCharCode(65 + i)}.</span> ${opt}
+        </button>
+    `).join('');
+    updateQuestionMap();
+}
+
+function selectOption(i) { userAnswers[currentIndex] = i; showQuestion(); }
+function nextQuestion() { if (currentIndex < currentQuestions.length - 1) { currentIndex++; showQuestion(); } }
+function prevQuestion() { if (currentIndex > 0) { currentIndex--; showQuestion(); } }
+function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
+
+function startTimer() {
+    timer = setInterval(() => {
+        timeLeft--;
+        let h = Math.floor(timeLeft / 3600);
+        let m = Math.floor((timeLeft % 3600) / 60);
+        let s = timeLeft % 60;
+        document.getElementById('timerDisplay').innerText = `${h.toString().padStart(2,'0')}:${m}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) triggerSubmit();
+    }, 1000);
+}
+
+function renderQuestionMap() {
+    document.getElementById('questionMap').innerHTML = currentQuestions.map((_, i) => `
+        <button onclick="currentIndex=${i};showQuestion()" id="map-${i}" class="w-full aspect-square border text-[10px] rounded font-bold">${i+1}</button>
+    `).join('');
+}
+
+function updateQuestionMap() {
+    userAnswers.forEach((ans, i) => {
+        const btn = document.getElementById(`map-${i}`);
+        btn.className = (i === currentIndex) ? "w-full aspect-square bg-green-700 text-white rounded font-bold" : 
+                        (ans !== null) ? "w-full aspect-square bg-green-200 text-green-800 rounded font-bold" : "w-full aspect-square bg-gray-100 text-gray-400 rounded border";
+    });
+}
+
+/* ============================================================
+   5. SUBMIT & DATA EXPORT
+   ============================================================ */
+function triggerSubmit() {
+    if (!confirm("Submit Exam?")) return;
+    clearInterval(timer);
+    
+    let score = 0;
+    let subjectsTaken = [];
+    currentQuestions.forEach((q, i) => {
+        if (!subjectsTaken.includes(q.tag)) subjectsTaken.push(q.tag);
+        const userLetter = ['A', 'B', 'C', 'D'][userAnswers[i]];
+        if (q.answer === userLetter) score++;
+    });
+
+    const aggregate = Math.round((score / currentQuestions.length) * 400);
+    
+    // SAVE TO DASHBOARD
+    let results = JSON.parse(localStorage.getItem('jambResults')) || [];
+    results.push({ name: studentData.name, reg: studentData.reg, total: aggregate, subs: subjectsTaken.join(', '), date: new Date().toLocaleString() });
+    localStorage.setItem('jambResults', JSON.stringify(results));
+
+    // SHOW RESULT
+    document.getElementById('examBox').classList.add('hidden');
+    document.getElementById('resultBox').classList.remove('hidden');
+    document.getElementById('totalScore').innerText = aggregate;
+    document.getElementById('studentInfo').innerText = `${studentData.name} (${studentData.reg})`;
+}
