@@ -209,7 +209,6 @@ const qBank = {
     options: ["4", "5", "6.25", "0.8"],
     answer: "A"
   },
-   Physics: [
   { q: "An object is placed between the pole and focus of a concave mirror. The image formed is:", options: ["Real and inverted", "Virtual and diminished", "Virtual, erect and enlarged", "Real and diminished"], answer: "C" },
 
   { q: "Which type of mirror always produces a virtual, erect and diminished image?", options: ["Concave mirror", "Plane mirror", "Convex mirror", "Parabolic mirror"], answer: "C" },
@@ -1571,3 +1570,4 @@ function triggerSubmit() {
     document.getElementById('studentInfo').innerText = `${studentData.name} (${studentData.reg})`;
 
 }
+
