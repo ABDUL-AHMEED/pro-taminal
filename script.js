@@ -188,66 +188,7 @@ const qBank = {
     options: ["Volt", "Ampere", "Ohm", "Coulomb"],
     answer: "D"
   },
-  {
-    q: "A device that converts mechanical energy into electrical energy is a:",
-    options: ["Motor", "Transformer", "Generator", "Rectifier"],
-    answer: "C"
-  },
-  {
-    q: "The resistance of a wire is $10 \Omega$. If its length is doubled and area is halved, new resistance is:",
-    options: ["$10 \Omega$", "$20 \Omega$", "$40 \Omega$", "$5 \Omega$"],
-    answer: "C"
-  },
-  {
-    q: "The instrument used to measure relative humidity is the:",
-    options: ["Hydrometer", "Hygrometer", "Barometer", "Anemometer"],
-    answer: "B"
-  },
-  {
-    q: "Which of the following is NOT a vector quantity?",
-    options: ["Velocity", "Force", "Temperature", "Acceleration"],
-    answer: "C"
-  },
-  {
-    q: "The escape velocity of an object from the Earth's surface depends on:",
-    options: ["Mass of the object", "Radius of the Earth", "The angle of projection", "The time of launch"],
-    answer: "B"
-  },
-  {
-    q: "An object is placed at the center of curvature of a concave mirror. The image is:",
-    options: ["Real and diminished", "Real and same size", "Virtual and enlarged", "Real and enlarged"],
-    answer: "B"
-  },
-  {
-    q: "Which particle is identical to the Helium nucleus?",
-    options: ["Alpha particle", "Beta particle", "Gamma ray", "Proton"],
-    answer: "A"
-  },
-  {
-    q: "The time taken for half the atoms in a radioactive sample to decay is:",
-    options: ["Decay constant", "Mean life", "Half-life", "Activity"],
-    answer: "C"
-  },
-  {
-    q: "Which of the following is the most penetrating?",
-    options: ["Alpha rays", "Beta rays", "Gamma rays", "X-rays"],
-    answer: "C"
-  },
-  {
-    q: "The work done in moving a unit charge between two points in a circuit is:",
-    options: ["Current", "Power", "Potential Difference", "Capacitance"],
-    answer: "C"
-  },
-  {
-    q: "The property of a body to remain at rest or in uniform motion unless acted upon is:",
-    options: ["Momentum", "Inertia", "Friction", "Impulse"],
-    answer: "B"
-  },
-  {
-    q: "A step-up transformer increases:",
-    options: ["Power", "Current", "Voltage", "Frequency"],
-    answer: "C"
-  },
+
   {
     q: "The SI unit of magnetic flux density is the:",
     options: ["Weber", "Tesla", "Henry", "Farad"],
@@ -268,6 +209,36 @@ const qBank = {
     options: ["4", "5", "6.25", "0.8"],
     answer: "A"
   },
+   Physics: [
+  { q: "An object is placed between the pole and focus of a concave mirror. The image formed is:", options: ["Real and inverted", "Virtual and diminished", "Virtual, erect and enlarged", "Real and diminished"], answer: "C" },
+
+  { q: "Which type of mirror always produces a virtual, erect and diminished image?", options: ["Concave mirror", "Plane mirror", "Convex mirror", "Parabolic mirror"], answer: "C" },
+
+  { q: "An object placed at the centre of curvature of a concave mirror will form an image that is:", options: ["Virtual and enlarged", "Real, inverted and same size", "Real and diminished", "Virtual and same size"], answer: "B" },
+
+  { q: "When an object is placed beyond the centre of curvature of a concave mirror, the image formed is:", options: ["Virtual and erect", "Real, inverted and diminished", "Virtual and enlarged", "Real and same size"], answer: "B" },
+
+  { q: "A boy sees his face enlarged when looking into a mirror. The mirror is most likely:", options: ["Convex mirror", "Plane mirror", "Concave mirror with object beyond focus", "Concave mirror with object between pole and focus"], answer: "D" },
+
+  { q: "To produce a parallel beam of light using a concave mirror, the source of light must be placed at the:", options: ["Pole", "Centre of curvature", "Focus", "Behind the mirror"], answer: "C" },
+
+  { q: "Which mirror is used as a driving mirror because it gives a wide field of view?", options: ["Concave mirror", "Plane mirror", "Convex mirror", "Parabolic mirror"], answer: "C" },
+
+  { q: "Parabolic mirrors are used in car headlamps because they:", options: ["Produce enlarged images", "Form virtual images", "Produce parallel beams of light", "Reduce image size"], answer: "C" },
+
+  { q: "An object is placed very close to the pole of a concave mirror. The image formed is:", options: ["Diminished and inverted", "Enlarged and erect", "Same size and inverted", "Diminished and erect"], answer: "B" },
+
+  { q: "If u is object distance and v is image distance, which graph gives the focal length as slope?", options: ["Graph of u against v", "Graph of v against u", "Graph of 1/u against 1/v", "Graph of m against v"], answer: "C" },
+
+  { q: "The magnification of a mirror is defined as:", options: ["v/u", "u/v", "f/v", "v/f"], answer: "A" },
+
+  { q: "Which image is formed by a convex mirror?", options: ["Real and inverted", "Virtual and erect", "Real and enlarged", "Virtual and inverted"], answer: "B" },
+
+  { q: "When an object is placed at the focus of a concave mirror, the image formed is:", options: ["At infinity", "At the pole", "Between focus and centre", "Behind the mirror"], answer: "A" },
+
+  { q: "The radius of curvature of a spherical mirror is related to focal length by:", options: ["R = f", "R = 2f", "f = 2R", "R = f/2"], answer: "B" },
+
+  { q: "Which of the following mirrors can form a real image?", options: ["Plane mirror only", "Convex mirror only", "Concave mirror only", "Convex and plane mirrors"], answer: "C" },           
   {
     q: "The temperature at which the water vapor in the air is just sufficient to saturate it is:",
     options: ["Ice point", "Boiling point", "Dew point", "Critical point"],
@@ -1598,4 +1569,5 @@ function triggerSubmit() {
     document.getElementById('resultBox').classList.remove('hidden');
     document.getElementById('totalScore').innerText = aggregate;
     document.getElementById('studentInfo').innerText = `${studentData.name} (${studentData.reg})`;
+
 }
