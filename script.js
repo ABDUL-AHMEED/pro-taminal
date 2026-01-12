@@ -118,82 +118,7 @@ const qBank = {
    { q: "Area of circle: radius = 14 cm (π=22/7)?", options: ["616","600","650","640"], answer: "A" },
    { q: "Solve for x: x^2 - x - 6 = 0", options: ["3 or -2","2 or -3","6 or -1","1 or -6"], answer: "A"}
 ],
-    Physics: [   {
-    q: "A body moves along a circular path with a constant speed. Its acceleration is:",
-    options: ["Zero", "Constant in magnitude", "Constant in direction", "Directed away from the center"],
-    answer: "B"
-  },
-  {
-    q: "The dimension of Planck's constant is the same as that of:",
-    options: ["Force", "Linear momentum", "Work", "Angular momentum"],
-    answer: "D"
-  },
-  {
-    q: "A simple pendulum has a period of 2.0s. What is its period if its length is quadrupled?",
-    options: ["1.0s", "2.0s", "4.0s", "8.0s"],
-    answer: "C"
-  },
-  {
-    q: "Which of the following is a derived unit?",
-    options: ["Kilogram", "Ampere", "Newton", "Kelvin"],
-    answer: "C"
-  },
-  {
-    q: "The clinical thermometer is characterized by having a:",
-    options: ["Wide bore", "Long stem", "Narrow constriction", "Large bulb"],
-    answer: "C"
-  },
-  {
-    q: "A gas occupies 2.0L at 273K. What is its volume at 546K if pressure is constant?",
-    options: ["1.0L", "2.0L", "4.0L", "8.0L"],
-    answer: "C"
-  },
-  {
-    q: "The process whereby a liquid turns into gas without boiling is:",
-    options: ["Sublimation", "Evaporation", "Condensation", "Deposition"],
-    answer: "B"
-  },
-  {
-    q: "The amount of heat required to raise the temperature of a unit mass by 1K is:",
-    options: ["Heat capacity", "Specific heat capacity", "Latent heat", "Internal energy"],
-    answer: "B"
-  },
-  {
-    q: "Which of the following mirrors forms only virtual, erect and diminished images?",
-    options: ["Concave mirror", "Convex mirror", "Plane mirror", "Parabolic mirror"],
-    answer: "B"
-  },
-  {
-    q: "The change in the direction of a wave as it passes from one medium to another is:",
-    options: ["Reflection", "Refraction", "Diffraction", "Interference"],
-    answer: "B"
-  },
-  {
-    q: "A lens that is thinner at the middle than at the edges is a:",
-    options: ["Converging lens", "Diverging lens", "Biconvex lens", "Plano-convex lens"],
-    answer: "B"
-  },
-  {
-    q: "The velocity of light in a vacuum is approximately:",
-    options: ["$3 \times 10^{8} m/s$", "$3 \times 10^{10} m/s$", "$1.5 \times 10^{8} m/s$", "$3 \times 10^{5} m/s$"],
-    answer: "A"
-  },
-  {
-    q: "Sound waves are examples of:",
-    options: ["Transverse waves", "Electromagnetic waves", "Longitudinal waves", "Stationary waves"],
-    answer: "C"
-  },
-  {
-    q: "The unit of electric charge is the:",
-    options: ["Volt", "Ampere", "Ohm", "Coulomb"],
-    answer: "D"
-  },
-
-  {
-    q: "The SI unit of magnetic flux density is the:",
-    options: ["Weber", "Tesla", "Henry", "Farad"],
-    answer: "B"
-  },
+    Physics: [  
   {
     q: "Which of the following travels at the speed of light?",
     options: ["Sound waves", "Water waves", "Radio waves", "Cathode rays"],
@@ -1570,4 +1495,5 @@ function triggerSubmit() {
     document.getElementById('studentInfo').innerText = `${studentData.name} (${studentData.reg})`;
 
 }
+
 
