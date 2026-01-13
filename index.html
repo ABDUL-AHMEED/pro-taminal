@@ -107,6 +107,14 @@
             <div class="flex flex-col gap-3">
                 <button onclick="window.print()" class="bg-green-700 text-white py-4 rounded-2xl font-black hover:bg-green-800 transition shadow-lg">DOWNLOAD PDF SLIP</button>
                 <button onclick="location.reload()" class="text-gray-400 text-sm font-bold hover:text-red-500 transition">Logout & Clear Session</button>
+                <div id="resultBox" class="hidden text-center p-8">
+    <h2 class="text-3xl font-bold">Your Score: <span id="totalScore"></span></h2>
+    <div id="studentInfo"></div>
+    
+    <button onclick="restartExam()" class="mt-6 bg-blue-600 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-700 transition">
+        🔄 TAKE ANOTHER TEST
+    </button>
+</div>
             </div>
         </section>
 
@@ -115,3 +123,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
