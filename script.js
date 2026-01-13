@@ -1473,27 +1473,56 @@ function triggerSubmit() {
     if (!confirm("Submit Exam?")) return;
     clearInterval(timer);
     
-    let score = 0;
-    let subjectsTaken = [];
+    let totalCorrect = 0;
+    let subjectResults = {}; // To store breakdown
+
     currentQuestions.forEach((q, i) => {
-        if (!subjectsTaken.includes(q.tag)) subjectsTaken.push(q.tag);
+        // Initialize subject tracker if not exists
+        if (!subjectResults[q.tag]) {
+            subjectResults[q.tag] = { correct: 0, total: 0 };
+        }
+        
+        subjectResults[q.tag].total++;
+
         const userLetter = ['A', 'B', 'C', 'D'][userAnswers[i]];
-        if (q.answer === userLetter) score++;
+        if (q.answer === userLetter) {
+            totalCorrect++;
+            subjectResults[q.tag].correct++;
+        }
     });
 
-    const aggregate = Math.round((score / currentQuestions.length) * 400);
+    // Keeping your original calculation for the big total
+    const aggregate = Math.round((totalCorrect / currentQuestions.length) * 400);
     
-    // SAVE TO DASHBOARD
+    // Create the breakdown text for English, Math, Bio, etc.
+    let breakdownHTML = Object.keys(subjectResults).map(sub => {
+        return `<div style="margin-bottom: 5px;">
+                    <strong>${sub}:</strong> ${subjectResults[sub].correct} / ${subjectResults[sub].total}
+                </div>`;
+    }).join('');
+
+    // SAVE TO DASHBOARD (Keeping your logic)
     let results = JSON.parse(localStorage.getItem('jambResults')) || [];
-    results.push({ name: studentData.name, reg: studentData.reg, total: aggregate, subs: subjectsTaken.join(', '), date: new Date().toLocaleString() });
+    results.push({ 
+        name: studentData.name, 
+        reg: studentData.reg, 
+        total: aggregate, 
+        date: new Date().toLocaleString() 
+    });
     localStorage.setItem('jambResults', JSON.stringify(results));
 
     // SHOW RESULT
     document.getElementById('examBox').classList.add('hidden');
     document.getElementById('resultBox').classList.remove('hidden');
+    
+    // Update the big score
     document.getElementById('totalScore').innerText = aggregate;
-    document.getElementById('studentInfo').innerText = `${studentData.name} (${studentData.reg})`;
-
+    
+    // Add the breakdown to the student info box
+    document.getElementById('studentInfo').innerHTML = `
+        <p style="font-weight: bold; margin-bottom: 10px;">${studentData.name} (${studentData.reg})</p>
+        <hr style="margin: 10px 0;">
+        <p style="font-size: 0.9em; color: #555;">SUBJECT BREAKDOWN:</p>
+        ${breakdownHTML}
+    `;
 }
-
-
