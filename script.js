@@ -1404,7 +1404,11 @@ function renderSubjectGrid() {
 
 function initiateExam() {
     const selected = Array.from(document.querySelectorAll('input[name="subj"]:checked')).map(i => i.value);
-    if (selected.length !== 4) return alert("Select exactly 4 subjects!");
+    
+    // CHANGED: Now it allows 1, 2, 3, or 4 subjects
+    if (selected.length < 1 || selected.length > 4) {
+        return alert("Please select between 1 and 4 subjects!");
+    }
 
     currentQuestions = [];
     selected.forEach(sub => {
@@ -1412,10 +1416,16 @@ function initiateExam() {
         currentQuestions.push(...shuffle(tagged));
     });
 
+    // Reset everything for a fresh start
+    currentIndex = 0; 
     userAnswers = new Array(currentQuestions.length).fill(null);
+    
     document.getElementById('subjectBox').classList.add('hidden');
     document.getElementById('examBox').classList.remove('hidden');
     document.getElementById('timerDisplay').classList.remove('hidden');
+    
+    // Reset timer (assuming 1 hour per subject or fixed time)
+    timeLeft = selected.length * 1800; // e.g., 30 mins per subject
     
     startTimer();
     showQuestion();
@@ -1526,3 +1536,16 @@ function triggerSubmit() {
         ${breakdownHTML}
     `;
 }
+function restartExam() {
+    // 1. Hide the result box
+    document.getElementById('resultBox').classList.add('hidden');
+    
+    // 2. Show the subject selection box
+    document.getElementById('subjectBox').classList.remove('hidden');
+    
+    // 3. Clear the previous subject selections
+    const checkboxes = document.querySelectorAll('input[name="subj"]');
+    checkboxes.forEach(cb => cb.checked = false);
+    
+    // 4. Reset the grid (optional but good for clean UI)
+    renderSubjectGrid();
